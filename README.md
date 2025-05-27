@@ -1,8 +1,8 @@
-nmlab_final/
- contracts/        # Solidity 智慧合約（Hardhat）
- backend/          # Python 後端 API（FastAPI + web3.py）
- frontend/         # 前端 PWA（React + TypeScript + ethers.js）
- rpi_verify/       # RPi 驗票腳本（Python + OpenCV + pyzbar）
+nmlab_final
+ contracts       # Solidity 智慧合約（Hardhat）
+ backend       # Python 後端 API（FastAPI + web3.py）
+ frontend       # 前端 PWA（React + TypeScript + ethers.js）
+ rpi_verify       # RPi 驗票腳本（Python + OpenCV + pyzbar）
 
 git clone https://github.com/hchun-0607/nmlab_final.git
 cd nmlab_final
