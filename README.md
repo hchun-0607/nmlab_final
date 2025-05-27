@@ -79,7 +79,7 @@ nmlab_final/
 ## 常見問題
 
 * **Node 版本**：`nvm install --lts && nvm use --lts`
-* **WSL noexec**：請將專案放到 Linux FS (`~/`)，並用 Remote-WSL 開啟
+* **WSL noexec**：將專案放到 Linux FS (`~/`)，並用 Remote-WSL 開啟
 * **忘記 ABI**：將 `contracts/artifacts/.../ReserveSBT.json` 的 ABI 貼到 `rpi_verify/ReserveSBT_abi.json`
 
 ---
