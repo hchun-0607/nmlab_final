@@ -1,0 +1,15 @@
+{
+  "folders": [
+    { "name": "contracts",  "path": "contracts" },
+    { "name": "backend",    "path": "backend" },
+    { "name": "frontend",   "path": "frontend" },
+    { "name": "rpi_verify", "path": "rpi_verify" }
+  ],
+  "settings": {
+    "files.exclude": { 
+      "**/.env": true,
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder:backend}/.venv/bin/python",
+    "eslint.workingDirectories": [ { "pattern": "frontend" } ]
+  }
+}

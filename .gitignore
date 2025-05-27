@@ -1,0 +1,18 @@
+# ── Python venv ──────────────
+**/.venv/
+__pycache__/
+*.py[cod]
+
+# ── Node / Frontend ────────────
+**/node_modules/
+dist/
+
+# ── IDE / OS ──────────────────
+.vscode/
+.DS_Store
+*.log
+
+# ── 機密設定 ──────────────────
+.env
+backend/.env.backend
+frontend/.env
