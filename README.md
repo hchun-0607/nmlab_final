@@ -1,32 +1,85 @@
-nmlab_final
- contracts       # Solidity 智慧合約（Hardhat）
- backend       # Python 後端 API（FastAPI + web3.py）
- frontend       # 前端 PWA（React + TypeScript + ethers.js）
- rpi_verify       # RPi 驗票腳本（Python + OpenCV + pyzbar）
+# NFT 訂位系統 (nmlab\_final)
 
-git clone https://github.com/hchun-0607/nmlab_final.git
-cd nmlab_final
+全端範例專案：
 
-cp env.example .env
-用編輯器把 .env 裡的 RPC_URL / OWNER_PK / BACKEND_URL 填好
-nano .env
+* **合約**：Solidity (Hardhat)
+* **後端**：Python (FastAPI + web3.py)
+* **前端**：React + TypeScript + ethers.js (Vite)
+* **驗票腳本**：Python (OpenCV + pyzbar)
 
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app:app --reload --port 8000  打開 → http://localhost:8000/docs 可看到 Swagger 測 API
+---
 
-cd ../frontend
-npm install
-npm run dev
+## 專案結構
 
-cd ../rpi_verify
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python scan_qr.py
+```
+nmlab_final/
+├── contracts/        # 智慧合約專案
+├── backend/          # FastAPI 後端
+├── frontend/         # React 前端
+└── rpi_verify/       # RPi 驗票腳本
+├── vscode-workspace.code-workspace  
+├── .env              
+├── env.example       
+└── .gitignore        
+```
 
-node / python 版本：
-Node.js ≥ v18 (用 nvm 安裝 / 切換)
-Python ≥ 3.11 (系統預裝或用 pyenv)
+---
+
+## 前置需求
+
+* Node.js ≥ v18（使用 nvm 管理）
+* Python ≥ 3.11（venv / pyenv）
+
+## 快速啟動
+
+1. **Clone 專案**
+
+   ```bash
+   git clone https://github.com/hchun-0607/nmlab_final.git
+   cd nmlab_final
+   ```
+
+2. **設定環境變數**
+
+   ```bash
+   cp env.example .env
+   # 編輯 .env，填入 RPC_URL、OWNER_PK、OWNER_ADDR、BACKEND_URL
+   ```
+
+3. **啟動後端**
+
+   ```bash
+   cd backend
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn app:app --reload --port 8000
+   ```
+
+4. **啟動前端**
+
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
+
+5. **測試驗票腳本**
+
+   ```bash
+   cd ../rpi_verify
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   python scan_qr.py
+   ```
+
+---
+
+## 常見問題
+
+* **Node 版本**：`nvm install --lts && nvm use --lts`
+* **WSL noexec**：請將專案放到 Linux FS (`~/`)，並用 Remote-WSL 開啟
+* **忘記 ABI**：將 `contracts/artifacts/.../ReserveSBT.json` 的 ABI 貼到 `rpi_verify/ReserveSBT_abi.json`
+
+---
