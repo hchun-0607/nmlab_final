@@ -10,26 +10,22 @@ interface Props {
   onBack: () => void;
   onForgot: () => void;
   onSignUp: () => void;
+  onLoginSuccess: () => void;
 }
 
-export default function LoginPage({ onBack, onForgot, onSignUp }: Props){
+export default function LoginPage({ onBack, onForgot, onSignUp, onLoginSuccess }: Props){
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Username: ${username}\nPassword: ${password}`);
+    //alert(`Username: ${username}\nPassword: ${password}`);
+
+    //先預設登入成功
+    onLoginSuccess(); // Call the success callback
   };
 
-  // const handleForgot = () => {
-  //   // TODO: navigate to forgot-password flow
-  //   alert("Go to forgot password");
-  // };
 
-  // const handleSignUp = () => {
-  //   // TODO: navigate to registration flow
-  //   alert("Go to sign up");
-  // };
 
   return (
     <Card className="bg-white w-full max-w-3xl p-8 rounded-2xl shadow-xl min-h-[320px] flex flex-col justify-center">
@@ -52,7 +48,7 @@ export default function LoginPage({ onBack, onForgot, onSignUp }: Props){
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
+              //required
               className="mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
             />
           </div>
@@ -68,7 +64,7 @@ export default function LoginPage({ onBack, onForgot, onSignUp }: Props){
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              //required
               className="mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
             />
           </div>

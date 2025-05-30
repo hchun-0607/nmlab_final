@@ -3,7 +3,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+
+    
+    },
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
   },
   "files": [],
   "references": [

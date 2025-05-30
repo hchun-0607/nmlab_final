@@ -6,10 +6,14 @@ import './App.css'
 import LoginPage from './LoginPage'
 import ForgotPasswordPage from './ForgotPasswordPage.tsx'
 import SignUpPage from './SignUpPage.tsx'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Dashboard from './Dashboard'
+import Profile from './Profile'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [view, setView] = useState<'home' | 'login' | 'forgot' | 'signup'>('home')
+  const [view, setView] = useState<'home' | 'login' | 'forgot' | 'signup' | 'app'>('home')
+  const [isAuthenticated, setAuth] = useState(false)
 
   if (view === 'login') {
     return (
@@ -17,6 +21,10 @@ function App() {
         onBack={() => setView('home')}
         onForgot={() => setView('forgot')}
         onSignUp={() => setView('signup')}
+        onLoginSuccess={() => {
+          setAuth(true)
+          setView('app')
+        }}
       />
     )
   }
@@ -35,6 +43,29 @@ function App() {
       />
     )
   }
+  if (view === 'app' && isAuthenticated) {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Dashboard
+              onLogout={() => {
+                setAuth(false)
+                setView('home')
+              }}
+            />
+          }
+        />
+      
+        <Route path="/profile" element={<Profile />} />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
 
   return (
     <>
