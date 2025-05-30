@@ -1,8 +1,10 @@
 import cv2, json, os
 from pyzbar.pyzbar import decode
 from dotenv import load_dotenv
+from eth_account.messages import encode_defunct
+from web3 import Web3
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
+#load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 print("Opening camera, press q to quit")
 cap = cv2.VideoCapture(0)
@@ -20,3 +22,9 @@ while True:
         break
 cap.release()
 cv2.destroyAllWindows()
+
+
+
+w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_URL")))
+abi = json.load(open("ReserveSBT_abi.json"))
+contract = w3.eth.contract(address=os.getenv("CONTRACT_ADDR"), abi=abi)
