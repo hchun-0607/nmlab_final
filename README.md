@@ -50,10 +50,7 @@ nmlab_final/
 
    ```bash
    cd backend
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   uvicorn app:app --reload --port 8000
+   python connection.py
    ```
 
 4. **啟動前端**
@@ -61,7 +58,7 @@ nmlab_final/
    ```bash
    cd ../frontend
    npm install
-   npm run dev
+   npm start
    ```
 
 5. **測試驗票腳本**

@@ -1,0 +1,6 @@
+{
+    "Account": "tom",
+    "password": "123456",
+    "Username": "黃語棠",
+    "Email": "wcc5tm@gmail.com"
+}
