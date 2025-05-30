@@ -1,42 +1,86 @@
 {
-  "name": "frontend",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "name": "@themesberg/volt-react-dashboard",
+  "description": "Volt React Dashboard is a free and open source admin dashboard template powered by React.js and Bootstrap 5",
+  "author": "Themesberg",
+  "keywords": [
+    "bootstrap 5",
+    "react",
+    "react dashboard",
+    "react admin template",
+    "free react",
+    "react ui library",
+    "react bootstrap 5",
+    "bootstrap 5 dashboard",
+    "themesberg"
+  ],
+  "license": "MIT",
+  "homepage": "https://demo.themesberg.com/volt-react-dashboard",
+  "bugs": {
+    "url": "https://github.com/themesberg/volt-react-dashboard/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/themesberg/volt-react-dashboard"
+  },
+  "version": "1.0.1",
   "dependencies": {
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@shadcn/ui": "^0.0.4",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.511.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "tailwind-merge": "^3.3.0"
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-regular-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.17",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@themesberg/react-bootstrap": "^1.4.1",
+    "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "5.0.0-beta1",
+    "chartist": "^0.10.1",
+    "chartist-plugin-tooltips-updated": "^0.1.4",
+    "exceljs": "^4.3.0",
+    "express": "^4.18.2",
+    "mdbreact": "^5.2.0",
+    "moment-timezone": "^0.5.31",
+    "mysql2": "^3.5.2",
+    "react": "^16.13.1",
+    "react-bootstrap": "^2.8.0",
+    "react-chartist": "^0.14.4",
+    "react-copy-to-clipboard": "^5.0.3",
+    "react-datetime": "^3.0.4",
+    "react-dom": "^16.13.1",
+    "react-github-btn": "^1.2.0",
+    "react-live": "^2.2.3",
+    "react-router-dom": "^5.2.0",
+    "react-router-hash-link": "^2.3.1",
+    "react-scripts": "3.4.3",
+    "react-transition-group": "^4.4.1",
+    "sass": "^1.50.0",
+    "simplebar-react": "^2.3.0",
+    "xlsx": "^0.18.5"
   },
-  "devDependencies": {
-    "@eslint/js": "^9.25.0",
-    "@tailwindcss/postcss": "^4.1.8",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.1",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.25.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "postcss": "^8.5.4",
-    "postcss-import": "^16.1.0",
-    "tailwindcss": "^3.4.17",
-    "tw-animate-css": "^1.3.0",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
+  "scripts": {
+    "build": "react-scripts build --openssl-legacy-provider",
+    "start": "react-scripts start --openssl-legacy-provider ",
+    "build-local": "PUBLIC_URL=./ react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
