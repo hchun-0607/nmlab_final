@@ -1,11 +1,12 @@
 # NFT 訂位系統 (nmlab\_final)
+網多炸裂...
 
 全端範例專案：
 
 * **合約**：Solidity (Hardhat)
 * **後端**：Python (FastAPI + web3.py)
 * **前端**：React + TypeScript + ethers.js (Vite)
-* **驗票腳本**：Python (OpenCV + pyzbar)
+* **SSI**：
 
 ---
 
