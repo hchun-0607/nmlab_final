@@ -7,27 +7,14 @@ import { Link } from 'react-router-dom';
 import axios from "axios"
 import {useHistory} from "react-router-dom"
 import { Routes } from "../routes";
-
-
-
-
-
+import { useChat } from "../api/context";
 
 export default () => {
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  const instance = axios.create({baseURL:'http://localhost:5000'});
   let history = useHistory();
-  const [memberData, setMemberData] = useState({
-    username: "",
-    account: "",
-    email: "",
-    password: "",
-    password2:"",
-    phonenumber:"",
-    passkey:"",
-    verificationCode:"",
 
-});
+  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const {memberData, setMemberData} = useChat();
+  const {isPhoneVerified, setIsPhoneVerified} = useChat();
 
 const handleChange = (event) => {
   setMemberData({
@@ -35,12 +22,14 @@ const handleChange = (event) => {
       [event.target.name]: event.target.value
   })
 };
-
-const handleSubmit = async(event) => {
+const onNext = async(event) => {
   event.preventDefault();
-  console.log(memberData);
-  
-  if(memberData.password !== memberData.password2){
+  // const { account, password, password2, username, email } = memberData;
+  if (!memberData.account || !memberData.password || !memberData.password2 || !memberData.username || !memberData.email || !memberData.password) {
+    alert("尚有欄位未填");
+    return;
+  }
+  else if(memberData.password !== memberData.password2){
     alert('密碼不一致')
     setMemberData({
       password: "",
@@ -52,26 +41,11 @@ const handleSubmit = async(event) => {
     return;
   }
   else{
-    const response = await instance.post('/add_user', memberData, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-    });
-
-    console.log(response)
-    
-    if(response.data.message === '註冊成功'){
-      alert('註冊成功')
-      history.push("/examples/Signin")
-    }
-    else{
-      alert("註冊失敗 : "+ response.data.message)
-      setMemberData(prev => Object.fromEntries(Object.keys(prev).map(key => [key, ""])));
-    }
-
+    history.push("/examples/passkey")
   }
   
-};
+}
+
 const handleSendVerificationCode = async () => {
   const phone = memberData.phonenumber;
 
@@ -91,13 +65,14 @@ const handleSendVerificationCode = async () => {
     if (response.data.success) {
       alert("驗證碼已發送至您的手機！");
     } else {
-      alert("發送驗證碼失敗：" + response.data.message);
+      alert(response.data.message);
     }
   } catch (error) {
     console.error("發送驗證碼錯誤：", error);
     alert("發送驗證碼時發生錯誤，請稍後再試");
   }
 };
+
 const handleCheckVerificationCode = async () => {
   const payload = {
     phone: memberData.phonenumber,
@@ -222,8 +197,9 @@ const handleCheckVerificationCode = async () => {
                       )}
                     </InputGroup>
                   </Form.Group>
-                  <Button variant="primary" type="submit" className="w-100"onClick={handleSubmit}>
-                    註冊
+                  {/* <Button variant="primary" type="submit" className="w-100"onClick={handleSubmit}> */}
+                  <Button variant="primary" type="submit" className="w-100"onClick={onNext}>
+                    下一步
                   </Button>
                 </Form>
                 <div className="d-flex justify-content-center align-items-center mt-4">

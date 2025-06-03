@@ -58,8 +58,9 @@ def add_user():
     Password = data.get('password')
     Username = data.get('username')
     Email = data.get('email')
+    Passkey = data.get('passkey')
 
-    if not all([Account, Password, Username, Email]):
+    if not all([Account, Password, Username, Email, Passkey]):
         return jsonify({"error": "資料不完整"}), 400
 
     existing_user = db.search(User.account == Account)
@@ -71,7 +72,8 @@ def add_user():
         "account": Account,
         "password": Password,
         "username": Username,
-        "email": Email
+        "email": Email,
+        "passkey":Passkey,
     }
 
     db.insert(user_info)
@@ -87,7 +89,7 @@ def send_verification_code():
     
     existing = phone_db.search(Phone.phone == phone)
     if existing and existing[0].get('code') == 'verified':
-        return jsonify({'success': False, 'message': '此號碼已被使用，請重新輸入'}), 400
+        return jsonify({'success': False, 'message': '此號碼已被使用，請重新輸入'})
     
     otp = str(random.randint(100000, 999999))
 
@@ -122,6 +124,23 @@ def check_verification_code():
         return jsonify({'success': True, 'message': '驗證成功'})
     else:
         return jsonify({'success': False, 'message': '驗證碼錯誤'}), 400
+    
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    print("Received data:", data)
+
+    account = data.get('Account')
+    new_password = data.get('Password')
+   
+    user_list = db.search(User.account == account)
+    if not user_list:
+        return jsonify({'success': False, 'message': "此帳戶不存在"})
+
+    # 修改密碼
+    db.update({'password': new_password}, User.account == account)
+    return jsonify({'success': True, 'message': "修改成功，請重新登入"})
+        
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

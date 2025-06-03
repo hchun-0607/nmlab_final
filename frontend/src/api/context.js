@@ -14,6 +14,8 @@ const ChatContext = createContext({
     val:'',
     valType:'',
     userData:'',
+    memberData:'',
+    isPhoneVerified:'',
     setMat:()=>{}, //fot material inventory
     setSup:()=>{}, // for suppliers
     setBom:()=>{}, //for bom
@@ -22,6 +24,8 @@ const ChatContext = createContext({
     setVal:()=>{}, //for value targets
     setValType:()=>{},
     setUserData:()=>{},
+    setMemberData:()=>{},
+    setIsPhoneVerified:()=>{},
     
 
 });
@@ -34,6 +38,8 @@ const ChatProvider = (props) => {
     const [mat, setMat] = useState("")
     const [val, setVal] = useState(null)
     const [valType, setValType] = useState("")
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+
 
     const [userData, setUserData] = useState({
         Username: "",
@@ -42,6 +48,16 @@ const ChatProvider = (props) => {
         Password: "",
         Permission: "",
         Status: "",
+    });
+    const [memberData, setMemberData] = useState({
+        username: "",
+        account: "",
+        email: "",
+        password: "",
+        password2:"",
+        passkey:"",
+        phonenumber:"",
+        verificationCode:"",
     });
 
     
@@ -66,6 +82,10 @@ const ChatProvider = (props) => {
                 setValType,
                 userData,
                 setUserData,
+                memberData,
+                setMemberData,
+                isPhoneVerified,
+                setIsPhoneVerified,
             }}
             {...props}
         />

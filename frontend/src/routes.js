@@ -10,6 +10,7 @@ export const Routes = {
     Signin: { path: "/examples/Signin" },
     Signup: { path: "/examples/sign-up" },
     ResetPassword: { path: "/examples/reset-password" },
+    Passkey: { path: "/examples/passkey" },
     Invoice: { path: "/examples/invoice" },
     // Valuetargets: { path: "/valuetargets" },//價值標的
     // Accountingsettings: { path: "/accountingsettings" },//會計科目設定

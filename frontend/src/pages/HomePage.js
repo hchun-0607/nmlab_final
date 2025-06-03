@@ -10,6 +10,7 @@ import Signup from "./Signup";
 import ResetPassword from "./ResetPassword";
 import UserSetting from "./UserSetting";
 import WalletSetting from "./WalletSetting";
+import Passkey from "./Passkey";
 
 // components
 import Sidebar from "../components/Sidebar";
@@ -88,6 +89,7 @@ export default () => (
     <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
     <RouteWithLoader exact path={Routes.Signup.path} component={Signup} />
     <RouteWithLoader exact path={Routes.ResetPassword.path} component={ResetPassword} />
+    <RouteWithLoader exact path={Routes.Passkey.path} component={Passkey} />
     {/* <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} /> */}
     {/* <RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} /> */}
 
