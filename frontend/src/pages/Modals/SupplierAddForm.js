@@ -7,7 +7,7 @@ import { useChat } from "../../api/context";
 
 
 const SupplierFormModal = ({ show, onClose }) => {
-  const instance = axios.create({baseURL:'http://localhost:5000/api/avm'});
+  const instance = axios.create({baseURL:'http://localhost:5000'});
   const {userData, setSup} = useChat();
   const [supplierData, setSupplierData] = useState({
     supplier_name: "",

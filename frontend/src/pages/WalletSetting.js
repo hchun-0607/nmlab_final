@@ -6,7 +6,7 @@ import ExcelJs from "exceljs";
 import axios from 'axios';
 import { useEffect } from "react";
 
-import AddBOMModal from './Modals/BomModal';
+// import AddBOMModal from './Modals/BomModal';
 import { useChat } from "../api/context";
 // import ProductTable from "../components/BomTable";
 
@@ -15,7 +15,7 @@ import { useChat } from "../api/context";
 export default () => {
   const [excelFile, setExcelFile] = useState(null);
   const [showBomModal, setShowBomModal] = useState(false);
-  const instance = axios.create({baseURL:'http://localhost:5000/api/avm'});
+  const instance = axios.create({baseURL:'http://localhost:5000'});
   const [result, setResult] = useState([]);
   const [bomdata, setBomdata] = useState(null);
   const {bom, setBom} = useChat();
@@ -211,11 +211,11 @@ export default () => {
       </Tab.Container>
 
       {/* Bom Form Modal */}
-      <AddBOMModal
+      {/* <AddBOMModal
         show={showBomModal}
         onHide={handleCloseBomModal}
         onSave={handleViewBom}
-      />
+      /> */}
     </>
   );
 };

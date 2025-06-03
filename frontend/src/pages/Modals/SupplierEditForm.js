@@ -10,7 +10,7 @@ import { Modal, Form, Nav, Card, Button, Table, Dropdown, ProgressBar,  InputGro
 
 const RemoveModal = ({ onHide, show, states, supplier, origs }) =>{
 
-    const instance = axios.create({baseURL:'http://localhost:5000/api/avm'});
+    const instance = axios.create({baseURL:'http://localhost:5000'});
     const [placeHolder, setPlaceHolder] = useState("")
     const [editing, setEditing] = useState(false)
     const [index, setIndex] = useState("選擇修改項目")
