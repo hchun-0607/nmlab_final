@@ -140,6 +140,14 @@ def reset_password():
     # 修改密碼
     db.update({'password': new_password}, User.account == account)
     return jsonify({'success': True, 'message': "修改成功，請重新登入"})
+
+@app.route('/get_restaurants', methods=['GET'])
+def get_restaurants():
+    data = [
+        {"id": 1, "name": "幸福餐廳", "hours": "11:00 - 22:00", "rating": 4.3, "price": 3},
+        {"id": 2, "name": "美味小館", "hours": "10:00 - 20:00", "rating": 4.7, "price": 2},
+    ]
+    return jsonify(data)
         
 
 if __name__ == '__main__':
