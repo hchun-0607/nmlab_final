@@ -1,6 +1,4 @@
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
-import os
+# connection.py
 import json
 import random
 import re
@@ -14,7 +12,9 @@ phone_db = db.table('phone_codes')  # 建立一個獨立的「手機驗證碼」
 Phone = Query()
 
 def read_info_as_dict(filepath):
-    info_dict = {}
+    """
+    讀取指定路徑的 JSON 檔案，並回傳 Python dict。
+    """
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             if ':' in line:
