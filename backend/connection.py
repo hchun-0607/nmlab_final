@@ -3,6 +3,9 @@ import json
 import random
 import re
 from tinydb import TinyDB, Query
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 CORS(app)  # 允許跨來源請求（CORS）
@@ -10,11 +13,14 @@ db = TinyDB('db.json')
 User = Query()
 phone_db = db.table('phone_codes')  # 建立一個獨立的「手機驗證碼」表格
 Phone = Query()
+restaurants_table = db.table('restaurants') 
+Restaurants = Query()
 
 def read_info_as_dict(filepath):
     """
     讀取指定路徑的 JSON 檔案，並回傳 Python dict。
     """
+    info_dict = {}
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             if ':' in line:
@@ -143,12 +149,9 @@ def reset_password():
 
 @app.route('/get_restaurants', methods=['GET'])
 def get_restaurants():
-    data = [
-        {"restaurant_id": 1, "name": "幸福餐廳", "hours": "11:00 - 22:00", "rating": 4.3, "price": 3},
-        {"restaurant_id": 2, "name": "美味小館", "hours": "10:00 - 20:00", "rating": 4.7, "price": 2},
-    ]
-    return jsonify(data)
-        
+    print("in")
+    data = restaurants_table.all()
+    return jsonify(data)    
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

@@ -22,6 +22,7 @@ export default () => {
   async function fetchRestaurants() {
     try {
       const response = await instance.get('/get_restaurants');
+      console.log(response.data)
       setRestaurantList(response.data);
     } catch (error) {
       console.error('無法取得餐廳資料:', error);
