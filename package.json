@@ -1,0 +1,17 @@
+{
+  "name": "nmlab_final",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+
+    "start:backend": "cd backend && python3 connection.py",
+
+    "start:frontend": "cd frontend && NODE_OPTIONS=--openssl-legacy-provider npm start",
+
+
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
