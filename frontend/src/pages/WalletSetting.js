@@ -6,7 +6,7 @@ import ExcelJs from "exceljs";
 import axios from 'axios';
 import { useEffect } from "react";
 
-// import AddBOMModal from './Modals/BomModal';
+import AddBOMModal from './Modals/BomModal';
 import { useChat } from "../api/context";
 // import ProductTable from "../components/BomTable";
 
@@ -211,11 +211,11 @@ export default () => {
       </Tab.Container>
 
       {/* Bom Form Modal */}
-      {/* <AddBOMModal
+      <AddBOMModal
         show={showBomModal}
         onHide={handleCloseBomModal}
         onSave={handleViewBom}
-      /> */}
+      />
     </>
   );
 };

@@ -5,6 +5,8 @@ import re
 from tinydb import TinyDB, Query
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from tinydb.storages import JSONStorage
+from tinydb.middlewares import CachingMiddleware
 
 
 app = Flask(__name__)
@@ -16,18 +18,6 @@ Phone = Query()
 restaurants_table = db.table('restaurants') 
 Restaurants = Query()
 
-def read_info_as_dict(filepath):
-    """
-    讀取指定路徑的 JSON 檔案，並回傳 Python dict。
-    """
-    info_dict = {}
-    with open(filepath, 'r', encoding='utf-8') as f:
-        for line in f:
-            if ':' in line:
-                key, value = line.strip().split(':', 1)
-                info_dict[key.strip()] = value.strip()
-    return info_dict
-
 @app.route('/check_user', methods=['POST'])
 def check_user():
     data = request.get_json()
@@ -36,7 +26,7 @@ def check_user():
     print("Raw ID from frontend:", user_account)
 
     result = db.search(User.account == user_account)
-   
+    print(db)
     # user_dir = os.path.join("Users", user_account)
     # info_file = os.path.join(user_dir, "info.txt")
 
@@ -63,6 +53,7 @@ def add_user():
     Account = data.get('account')
     Password = data.get('password')
     Username = data.get('username')
+    Phone = data.get('phone')
     Email = data.get('email')
     Passkey = data.get('passkey')
 
@@ -79,11 +70,16 @@ def add_user():
         "password": Password,
         "username": Username,
         "email": Email,
+        "phone":Phone,
         "passkey":Passkey,
+        
     }
 
-    db.insert(user_info)
-    return jsonify({"message": "註冊成功"}), 200
+    insert_result = db.insert(user_info)
+    if insert_result:
+        return jsonify({"message": "註冊成功"}), 200
+    else:
+        return jsonify({"message": "註冊失敗"}), 500
 
 
 @app.route('/send_verification_code', methods=['POST'])
@@ -127,7 +123,7 @@ def check_verification_code():
     if expected_code == code:
         # 更新驗證碼狀態為 verified
         phone_db.update({'code': 'verified'}, Phone.phone == phone)
-        return jsonify({'success': True, 'message': '驗證成功'})
+        return jsonify({'success': True, 'message': '驗證成功', 'phone':phone})
     else:
         return jsonify({'success': False, 'message': '驗證碼錯誤'}), 400
     

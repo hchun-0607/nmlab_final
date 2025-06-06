@@ -7,19 +7,71 @@ import axios from 'axios';
 import { useEffect } from "react";
 
 import { useChat } from "../api/context";
+import AddBOMModal from './Modals/BomModal';
+
+
 
 export default () =>  {
   const [activeTab, setActiveTab] = useState("voice");
   const [text, setText] = useState("");
-  const [manualData, setManualData] = useState({
-    name: "",
-    restaurant: "",
-    date: "",
-    time: "",
-    people: 1
-  });
+  const {restaurantList, setRestaurantList} = useChat();
+  const {reservationData, setReservationData} = useChat();
+  const {userData, setUserData} = useChat();
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState("尚未開始");
+  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const [showBomModal, setShowBomModal] = useState(false);
+  const [bomdata, setBomdata] = useState(null);
+  const {bom, setBom} = useChat();
+  
+  async function getBOMData() {
+    try {
+      const response = await instance.get('/get_bom');
+      console.log(response.data);
+      return response.data; // This should contain the data returned by the backend
+    } catch (error) {
+      console.error('Error fetching BOM data:', error);
+      throw error; // Rethrow the error to handle it at a higher level if needed
+    }
+  }
+  
+  const handleCloseBomModal = () => {
+    setShowBomModal(false);
+  };
+
+  const handleSingleAdd = () => {
+    setShowBomModal(true);
+    console.log(userData)
+    const restaurant = restaurantList.find(r => r.name === reservationData.restaurant_name);
+
+    // if (restaurant) {
+    //     setReservationData({
+    //     ...reservationData,
+    //     restaurant_name: restaurant.name,
+    //     restaurant_id: restaurant.id
+    //     });
+    setReservationData(prev => ({
+            ...prev,
+            restaurant_id: restaurant.restaurant_id ||'',
+            reserver_phone: userData.Phone,
+            reserver_email : userData.Email,
+            reserver_account: userData.Account
+      }))
+    console.log(reservationData)
+    handleManualSubmit()
+  };
+
+
+  async function handleViewBom() {
+    try {
+      const data = await getBOMData();
+      console.log('BOM data:', data);
+      setBom("BOM");
+      setBomdata(data);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  }
 
   const startRecognition = () => {
     const recognition = new window.webkitSpeechRecognition();
@@ -62,28 +114,62 @@ export default () =>  {
         console.error(err);
       });
   };
+  const handleRestaurantChange = (e) => {
+    const selectedName = e.target.value;
+    const restaurant = restaurantList.find(r => r.name === selectedName);
+
+    if (restaurant) {
+        setReservationData({
+        ...reservationData,
+        restaurant_name: restaurant.name,
+        restaurant_id: restaurant.id
+        });
+    } else {
+        setReservationData({
+        ...reservationData,
+        restaurant_name: '',
+        restaurant_id: ''
+        });
+    }
+    console.log(reservationData)
+    };
 
   const handleManualSubmit = () => {
-    setStatus("送出分析中...");
-    fetch("http://localhost:5000/api/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: `我想幫 ${manualData.name} 在 ${manualData.date} ${manualData.time} 在 ${manualData.restaurant} 訂位 ${manualData.people} 人`
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        setResult(data);
-        setStatus("完成 ✅");
-      })
-      .catch(err => {
-        setStatus("發生錯誤 ❌");
-        console.error(err);
-      });
+    // alert(reservationData)
+    // setStatus("送出分析中...");
+    // fetch("http://localhost:5000/api/analyze", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     text: `我想幫 ${reservationData.reserver_name} 在 ${reservationData.date} ${reservationData.time} 在 ${reservationData.restaurant_id} 訂位 ${reservationData.people} 人`
+    //   })
+    // })
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setResult(data);
+    //     setStatus("完成 ✅");
+    //   })
+    //   .catch(err => {
+    //     setStatus("發生錯誤 ❌");
+    //     console.error(err);
+    //   });
   };
 
+  useEffect(() => {
+    async function fetchRestaurants() {
+      try {
+        const response = await instance.get('/get_restaurants');
+        console.log(response.data)
+        setRestaurantList(response.data);
+      } catch (error) {
+        console.error('無法取得餐廳資料:', error);
+      }
+    }
+    fetchRestaurants();
+      }, []);
+
   return (
+    <div>
     <Container fluid className="p-4" style={{ minHeight: "100vh", backgroundColor: "#f7f9fc" }}>
       <h2 className="text-center mb-4">語音與手動輸入訂位</h2>
 
@@ -124,21 +210,26 @@ export default () =>  {
             <Row className="mb-3">
               <Col><Form.Control
                 type="text"
-                placeholder="訂位人姓名"
-                value={manualData.name}
-                onChange={e => setManualData({ ...manualData, name: e.target.value })}
+                placeholder={userData.Username}
+                value={reservationData.reserver_name}
+                onChange={e => setReservationData({ ...reservationData, reserver_name: e.target.value })}
               /></Col>
             </Row>
             <Row className="mb-3">
               <Col>
                 <Form.Select
-                  value={manualData.restaurant}
-                  onChange={e => setManualData({ ...manualData, restaurant: e.target.value })}
-                >
-                  <option value="">請選擇餐廳</option>
-                  <option>永康街義大利餐廳</option>
-                  <option>信義區壽司店</option>
-                  <option>天母牛排館</option>
+                    value={reservationData.restaurant_name || ''}
+                    onChange={handleRestaurantChange}
+                    >
+                    <option value="" disabled hidden>
+                        {reservationData.restaurant_name || '請選擇餐廳'}
+                    </option>
+
+                    {restaurantList.map((r) => (
+                        <option key={r.id} value={r.name}>
+                        {r.name}
+                        </option>
+                    ))}
                 </Form.Select>
               </Col>
             </Row>
@@ -146,23 +237,23 @@ export default () =>  {
               <Col>
                 <Form.Control
                   type="date"
-                  value={manualData.date}
-                  onChange={e => setManualData({ ...manualData, date: e.target.value })}
+                  value={reservationData.date}
+                  onChange={e => setReservationData({ ...reservationData, date: e.target.value })}
                 />
               </Col>
               <Col>
                 <Form.Control
                   type="time"
-                  value={manualData.time}
-                  onChange={e => setManualData({ ...manualData, time: e.target.value })}
+                  value={reservationData.time}
+                  onChange={e => setReservationData({ ...reservationData, time: e.target.value })}
                 />
               </Col>
             </Row>
             <Row className="mb-4">
               <Col>
                 <Form.Select
-                  value={manualData.people}
-                  onChange={e => setManualData({ ...manualData, people: e.target.value })}
+                  value={reservationData.people}
+                  onChange={e => setReservationData({ ...reservationData, people: e.target.value })}
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                     <option key={num} value={num}>{num} 人</option>
@@ -171,7 +262,7 @@ export default () =>  {
               </Col>
             </Row>
             <div className="text-center">
-              <Button variant="success" size="lg" onClick={handleManualSubmit}>送出訂位</Button>
+              <Button variant="success" size="lg" onClick={handleSingleAdd}>送出訂位</Button>
             </div>
           </Form>
         </div>
@@ -186,5 +277,12 @@ export default () =>  {
         </div>
       )}
     </Container>
+    <AddBOMModal
+        show={showBomModal}
+        onHide={handleCloseBomModal}
+        onSave={handleViewBom}
+      />
+    </div>
   );
+
 }
