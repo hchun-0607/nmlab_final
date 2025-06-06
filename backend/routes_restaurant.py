@@ -1,8 +1,12 @@
 # Restaurants/routes.py
 from flask import Blueprint, request, jsonify, current_app
 import os, json, time, random, string, shutil
+from tinydb import TinyDB, Query
 
+db = TinyDB('db.json')
 restaurants_bp = Blueprint('restaurants', __name__, url_prefix='/api/avm')
+restaurants_table = db.table('restaurants') 
+Restaurants = Query()
 
 def read_info_as_dict(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -38,22 +42,12 @@ def add_restaurant():
 
     return jsonify({"message": "餐廳新增成功", "restaurant_id": restaurant_id}), 200
 
-@restaurants_bp.route('/get_restaurants', methods=['GET'])
+@app.route('/get_restaurants', methods=['GET'])
 def get_restaurants():
-    base_dir = os.path.join(current_app.root_path, 'Restaurants')
-    if not os.path.isdir(base_dir):
-        return jsonify({"restaurants": []}), 200
+    print("in")
+    data = restaurants_table.all()
+    return jsonify(data)    
 
-    restaurants = []
-    for folder in os.listdir(base_dir):
-        info_path = os.path.join(base_dir, folder, 'info.txt')
-        if os.path.isfile(info_path):
-            try:
-                data = read_info_as_dict(info_path)
-                restaurants.append(data)
-            except:
-                continue
-    return jsonify({"restaurants": restaurants}), 200
 
 # 其餘 get_restaurant、update_restaurant、delete_restaurant 與之前示範相同
 

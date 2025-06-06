@@ -47,11 +47,12 @@ const handleSubmit = async(event, onSave) => {
     console.log(response.data.userdata)
     if(response.data.status === '成功登入'){
       alert(response.data.status)
+      console.log(response.data)
       setUserData({
-          Username: response.data.userdata.Username,
-          Account: response.data.userdata.Account,
-          Email: response.data.userdata.Email,
-          Password: response.data.userdata.Password,
+          Username: response.data.userdata.username,
+          Account: response.data.userdata.account,
+          Email: response.data.userdata.email,
+          Password: response.data.userdata.password,
           Permission: 1,
           Status: 1,
       })

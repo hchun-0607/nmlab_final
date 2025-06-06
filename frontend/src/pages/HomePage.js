@@ -10,7 +10,10 @@ import Signup from "./Signup";
 import ResetPassword from "./ResetPassword";
 import UserSetting from "./UserSetting";
 import WalletSetting from "./WalletSetting";
+import Reserve from "./Reserve";
 import Passkey from "./Passkey";
+import Restaurant from "./Restaurant";
+import Reservations from "./Reservations";
 
 // components
 import Sidebar from "../components/Sidebar";
@@ -90,10 +93,9 @@ export default () => (
     <RouteWithLoader exact path={Routes.Signup.path} component={Signup} />
     <RouteWithLoader exact path={Routes.ResetPassword.path} component={ResetPassword} />
     <RouteWithLoader exact path={Routes.Passkey.path} component={Passkey} />
-    {/* <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} /> */}
-    {/* <RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} /> */}
-
-    {/* pages */}
+    <RouteWithSidebar exact path={Routes.Reserve.path} component={Reserve} />
+    <RouteWithSidebar exact path={Routes.Reservations.path} component={Reservations} />
+    <RouteWithSidebar exact path={Routes.Restaurant.path} component={Restaurant} />
     <RouteWithSidebar exact path={Routes.DashboardOverview.path} component={DashboardOverview} />
     <RouteWithSidebar exact path={Routes.Usersetting.path} component={UserSetting} />
     <RouteWithSidebar exact path={Routes.Walletsetting.path} component={WalletSetting} />

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import SimpleBar from 'simplebar-react';
-import { useLocation } from "react-router-dom";
+import { useLocation, Link} from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBoxOpen, faChartPie, faCog, faHandHoldingUsd, faSignOutAlt, faTable, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBoxOpen, faChartPie, faCog,faUtensils, faHandHoldingUsd, faSignOutAlt, faTable, faUser} from "@fortawesome/free-solid-svg-icons";
 import { Nav, Badge, Image, Button, Dropdown, Accordion, Navbar } from '@themesberg/react-bootstrap';
-import { Link } from 'react-router-dom';
 
 import { useChat } from "../api/context";
 import { Routes } from "../routes";
@@ -63,7 +62,8 @@ export default (props = {}) => {
           <span>
             {icon ? <span className="sidebar-icon"><FontAwesomeIcon icon={icon} /> </span> : null}
             {image ? <Image src={image} width={20} height={20} className="sidebar-icon svg-icon" /> : null}
-            {tag === "tag"?<span className="sidebar-text">您好 ! {title} / {permission === 1    ? "Super User" : "Normal User"}</span>
+            {/* {tag === "tag"?<span className="sidebar-text">您好 ! {title} / {permission === 1    ? "Super User" : "Normal User"}</span> */}
+            {tag === "tag"?<span className="sidebar-text">您好 ! {title} </span>
             :
             <span className="sidebar-text">{title}</span>
             }
@@ -85,12 +85,16 @@ export default (props = {}) => {
             <Nav className="flex-column pt-3 pt-md-0">
               <NavItem title={userData.Username} permission = {userData.Permission} tag="tag"  />
               <NavItem title="首頁" link={Routes.DashboardOverview.path} icon={faChartPie} />
+              
               {/* <NavItem title="財會系統" icon={faHandHoldingUsd} link={Routes.Transactions.path} /> */}
-              <CollapsableNavItem eventKey="examples/" title="立即訂位" icon={faCog}>
+              <CollapsableNavItem eventKey="reserves/" title="立即訂位" icon={faUtensils}>
+                <NavItem title="餐廳列表" link={Routes.Restaurant.path}  /> 
+                <NavItem title="直接訂位" link={Routes.Reserve.path}  /> 
               </CollapsableNavItem>  
-               <CollapsableNavItem eventKey="examples/" title="訂位資訊" icon={faCog}>
-              </CollapsableNavItem>            
-              <CollapsableNavItem eventKey="tables/" title="使用者資訊" icon={faTable}>
+              {/* <CollapsableNavItem eventKey="examples/" title="訂位資訊" icon={faCog}> */}
+              <NavItem title="歷史訂位資訊" link={Routes.Reservations.path} icon={faTable} /> 
+              {/* </CollapsableNavItem>             */}
+              <CollapsableNavItem eventKey="tables/" title="使用者資訊" icon={faUser}>
                 <NavItem title="錢包資訊" link={Routes.Walletsetting.path} /> 
                 <NavItem title="編輯個人資料" link={Routes.Usersetting.path} />
               </CollapsableNavItem>

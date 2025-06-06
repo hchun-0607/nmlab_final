@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify, current_app
 import os, json, random
 import uuid, time
+from voice_to_mp3 import word_to_json
 
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
@@ -212,6 +213,18 @@ def request_challenge():
     nonce_db.insert({'challenge': challenge, 'expired_at': time.time() + 300})  # 5 分鐘有效
     return challenge
 
+@app.route('/analyze_words', methods=['POST'])
+def analyze_words():
+    data = request.get_json()
+    print(data)
+    text = data.get('text', '')
+    # 做分析，例如 NLP 處理或關鍵字比對
+    print(text)
+    result = word_to_json(text)
+    if all(result.get(key) for key in ['restaurant_name', 'date', 'time', 'number_of_people']):
+        return jsonify({'success': True, 'message': '辨識辨識成功', 'result':result})
+    else:
+        return jsonify({'success': False, 'message': '辨識錯誤'}), 400
 def verify_holder_signature(vp_json: dict, holder_signature_hex: str) -> bool:
     holder_did = vp_json.get('holder_did')
     user = users_db.get(User.did == holder_did)

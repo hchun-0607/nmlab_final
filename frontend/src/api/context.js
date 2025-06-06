@@ -16,6 +16,7 @@ const ChatContext = createContext({
     userData:'',
     memberData:'',
     isPhoneVerified:'',
+    restaurantList:'',
     setMat:()=>{}, //fot material inventory
     setSup:()=>{}, // for suppliers
     setBom:()=>{}, //for bom
@@ -26,6 +27,7 @@ const ChatContext = createContext({
     setUserData:()=>{},
     setMemberData:()=>{},
     setIsPhoneVerified:()=>{},
+    setRestaurantList:()=>{},
     
 
 });
@@ -39,6 +41,7 @@ const ChatProvider = (props) => {
     const [val, setVal] = useState(null)
     const [valType, setValType] = useState("")
     const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+    const [restaurantList, setRestaurantList] = useState([]);
 
 
     const [userData, setUserData] = useState({
@@ -86,6 +89,8 @@ const ChatProvider = (props) => {
                 setMemberData,
                 isPhoneVerified,
                 setIsPhoneVerified,
+                restaurantList,
+                setRestaurantList,
             }}
             {...props}
         />

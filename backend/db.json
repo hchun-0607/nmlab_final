@@ -15,8 +15,9 @@
             "password": "123456",
             "username": "Cjhuang168",
             "email": "wcc5tm@gmail.com",
-            "passkey": "123456",
-            "chain_address": "null"
+            "phone": "0906692992",
+            "wallet_address": "0x1234567890abcdef1234567890abcdef12345678",
+            "passkey": "123456"
         }
     },
     "restaurants": {
@@ -27,6 +28,7 @@
             "close": 23.0,
             "capacity": 2,
             "type": "fast food",
+            "price" : 1,
             "rating": 4.5,
             "contract_adress": "null",
             "location": "null",
