@@ -144,8 +144,8 @@ def reset_password():
 @app.route('/get_restaurants', methods=['GET'])
 def get_restaurants():
     data = [
-        {"id": 1, "name": "幸福餐廳", "hours": "11:00 - 22:00", "rating": 4.3, "price": 3},
-        {"id": 2, "name": "美味小館", "hours": "10:00 - 20:00", "rating": 4.7, "price": 2},
+        {"restaurant_id": 1, "name": "幸福餐廳", "hours": "11:00 - 22:00", "rating": 4.3, "price": 3},
+        {"restaurant_id": 2, "name": "美味小館", "hours": "10:00 - 20:00", "rating": 4.7, "price": 2},
     ]
     return jsonify(data)
         

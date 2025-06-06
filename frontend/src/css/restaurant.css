@@ -1,0 +1,21 @@
+.restaurant-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #f8f9fa;
+  padding: 24px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.restaurant-info {
+  flex-grow: 1;
+}
+
+.restaurant-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
