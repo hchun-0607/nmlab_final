@@ -53,6 +53,7 @@ const handleSubmit = async(event, onSave) => {
           Account: response.data.userdata.account,
           Email: response.data.userdata.email,
           Password: response.data.userdata.password,
+          Phone: response.data.userdata.phone,
           Permission: 1,
           Status: 1,
       })

@@ -19,6 +19,8 @@ export default () => {
   const [result, setResult] = useState([]);
   const [bomdata, setBomdata] = useState(null);
   const {bom, setBom} = useChat();
+  const {reservationData, setReservationData} = useChat();
+  
 
   const handleExceldownload = async () => {
     const bom = new ExcelJs.Workbook();
@@ -81,6 +83,8 @@ export default () => {
     setShowBomModal(false);
   };
 
+
+
   const handleSaveBom = async () => {
     // Handle the logic to save the Bom data
     setResult(await instance.get('/get_bom'))
@@ -115,6 +119,8 @@ export default () => {
     setBom(null);
   }, [bom]);
 
+  
+
   const [remove , setRemove] = useState(false)
   const handleViewRemove = () => {
     setRemove(true)
@@ -124,7 +130,7 @@ export default () => {
     <>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-3">
         <h2 className="fw-bold">
-          歷史訂位資訊
+          歷史訂為資訊
         </h2>
       </div>
       <Tab.Container defaultActiveKey="upload">
