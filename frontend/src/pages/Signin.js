@@ -12,7 +12,7 @@ import { useChat } from "../api/context";
 
 export default () => {
 
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
   const {userData, setUserData} = useChat();
 
   let history = useHistory();

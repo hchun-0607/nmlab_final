@@ -56,7 +56,7 @@ const handleSendVerificationCode = async () => {
   }
 
   try {
-    const response = await instance.post('/send_verification_code', { phone }, {
+    const response = await instance.post('api/avm/users/send_verification_code', { phone }, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -84,7 +84,7 @@ const handleCheckVerificationCode = async () => {
     return;
   }
   try {
-    const response = await instance.post('/check_verification_code', payload , {
+    const response = await instance.post('api/avm/users/check_verification_code', payload , {
       headers: {
         'Content-Type': 'application/json'
       }
