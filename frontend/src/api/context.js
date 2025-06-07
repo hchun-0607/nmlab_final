@@ -17,6 +17,7 @@ const ChatContext = createContext({
     memberData:'',
     isPhoneVerified:'',
     restaurantList:'',
+    reservationData:'',
     setMat:()=>{}, //fot material inventory
     setSup:()=>{}, // for suppliers
     setBom:()=>{}, //for bom
@@ -28,6 +29,7 @@ const ChatContext = createContext({
     setMemberData:()=>{},
     setIsPhoneVerified:()=>{},
     setRestaurantList:()=>{},
+    setReservationData:()=>{},
     
 
 });
@@ -50,6 +52,7 @@ const ChatProvider = (props) => {
         Email: "",
         Password: "",
         Permission: "",
+        Phone:"",
         Status: "",
     });
     const [memberData, setMemberData] = useState({
@@ -59,8 +62,21 @@ const ChatProvider = (props) => {
         password: "",
         password2:"",
         passkey:"",
-        phonenumber:"",
+        phone:"",
         verificationCode:"",
+    });
+    const [reservationData, setReservationData] = useState({
+        restaurant_id: "",
+        restaurant_name: "",
+        date:"",
+        time:"",
+        people:"",
+        reserver_name:'',
+        reserver_account:'',
+        reserver_adress:'',
+        reserver_phone:'',
+        reserver_email:'',
+        VP:'',
     });
 
     
@@ -91,6 +107,8 @@ const ChatProvider = (props) => {
                 setIsPhoneVerified,
                 restaurantList,
                 setRestaurantList,
+                reservationData,
+                setReservationData,
             }}
             {...props}
         />

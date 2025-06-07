@@ -93,6 +93,10 @@ const handleCheckVerificationCode = async () => {
 
     if (response.data.success) {
       alert("驗證成功！");
+      setMemberData(prev => ({
+        ...prev,
+        phone: response.data.phone
+      }));
       setTimeout(() => setIsPhoneVerified(true), 500); // 可設定一個 state 表示已驗證成功
     } else {
       alert("驗證失敗：" + response.data.message);
