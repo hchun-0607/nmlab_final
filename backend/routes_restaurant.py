@@ -58,7 +58,7 @@ def get_restaurants():
 # 其餘 get_restaurant、update_restaurant、delete_restaurant 與之前示範相同
 
 @restaurants_bp.route('/get_availability/<restaurant_id>/<date>', methods=['GET'])
-def get_availability(restaurant_id, date):
+def get_availability(restaurant_id, date): #to frontend
     # 餐廳根目錄
     base_dir = os.path.join(current_app.root_path, 'Restaurants', restaurant_id)
     if not os.path.isdir(base_dir):
@@ -177,3 +177,5 @@ def book_any_time():
 
 def intervals_overlap(s1, e1, s2, e2):
    return not (e1 <= s2 or e2 <= s1)
+
+

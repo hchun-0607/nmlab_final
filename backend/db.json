@@ -1,1 +1,67 @@
-{"phone_codes": {"1": {"phone": "0906692992", "code": "verified"}}, "_default": {"1": {"account": "tomhuang", "password": "123456", "username": "Cjhuang168", "email": "wcc5tm@gmail.com", "passkey": "123456"}}}
+{
+    "phone_codes": {
+        "1": {
+            "phone": "0906692992",
+            "code": "verified"
+        },
+        "2": {
+            "phone": "0910553536",
+            "code": "verified"
+        }
+    },
+    "_default": {
+        "1": {
+            "account": "tomhuang",
+            "password": "123456",
+            "username": "Cjhuang168",
+            "email": "wcc5tm@gmail.com",
+            "passkey": "123456",
+            "chain_address": "null"
+        }
+    },
+    "restaurants": {
+        "1": {
+            "restaurant_id": "0001",
+            "name": "Mcdonalds",
+            "open": 11.0,
+            "close": 23.0,
+            "capacity": 2,
+            "type": "fast food",
+            "rating": 4.5,
+            "contract_adress": "null",
+            "location": "null",
+            "booked_intervals": {
+                "2025-06-10": {
+                    "12:00": 1,
+                    "13:00": 1
+                },
+                "2025-06-11": {
+                    "12:00": 1,
+                    "13:00": 1
+                }
+            }
+        },
+        "2": {
+            "restaurant_id": "0002",
+            "name": "MaryJane",
+            "open": 11.0,
+            "close": 23.0,
+            "capacity": 2,
+            "type": "fast food",
+            "rating": 4.5,
+            "booked_intervals": {
+                "2025-06-10": {
+                    "12:00": 1,
+                    "13:00": 1
+                },
+                "2025-06-11": {
+                    "12:00": 1,
+                    "13:00": 1
+                }
+            }
+        }
+    },
+    "nonces":{},
+    "bookings":{}
+
+}

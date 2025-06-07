@@ -3,8 +3,8 @@ from flask import Flask
 from flask_cors import CORS
 
 # 把 users、restaurants 的 routes Blueprint 都 import 進來
-from backend.routes_users import users_bp
-from backend.routes_restaurant import restaurants_bp
+from routes_users import users_bp
+from routes_restaurant import restaurants_bp
 
 app = Flask(__name__)
 CORS(app)
