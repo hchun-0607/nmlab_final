@@ -10,7 +10,7 @@ import {useHistory} from "react-router-dom"
 
 
 export default () => {
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/restaurants'});
   const {restaurantList, setRestaurantList} = useChat();
   const {reservationData, setReservationData} = useChat();
   let history = useHistory();

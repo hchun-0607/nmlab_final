@@ -7,7 +7,9 @@ import { useChat } from "../api/context";
 
 export default () => {
 
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
+  
+  
   const {memberData, setMemberData} = useChat();
 
   let history = useHistory();
@@ -85,8 +87,8 @@ const renderInputBoxes = (type, values, refs) =>
 
     console.log(response)
     
-    if(response.data.message === '註冊成功'){
-      alert('註冊成功')
+    if(response.data.message === '使用者新增成功'){
+      alert('使用者新增成功')
       history.push("/example/Signin")
     }
     else{

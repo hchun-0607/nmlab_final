@@ -15,7 +15,9 @@ import { useChat } from "../api/context";
 export default () => {
   const [excelFile, setExcelFile] = useState(null);
   const [showBomModal, setShowBomModal] = useState(false);
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
+
+  
   const [result, setResult] = useState([]);
   const [bomdata, setBomdata] = useState(null);
   const {bom, setBom} = useChat();

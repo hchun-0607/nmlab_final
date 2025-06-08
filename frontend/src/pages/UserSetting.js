@@ -13,6 +13,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("voice");
   const [text, setText] = useState("");
   const [manualText, setManualText] = useState("");
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState("尚未開始");
 

@@ -5,7 +5,8 @@ import moment from 'moment';
 import { useChat } from '../../api/context';
 
 function AddBOMModal({ show, onHide }) {
-    const instance = axios.create({ baseURL: 'http://localhost:5000/api/avm' });
+    const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
+
     const { userData , setSup} = useChat();
     const {reservationData, setReservationData} = useChat();
     

@@ -16,7 +16,7 @@ export default () => {
     Password: "",
     Password2: "",
   });
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
   let history = useHistory();
 
   

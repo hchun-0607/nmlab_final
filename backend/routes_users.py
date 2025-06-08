@@ -67,7 +67,9 @@ def check_user():
         "userdata": {
             "Account": user.get("account"),
             "Username": user.get("username"),
-            "Email": user.get("email")
+            "Email": user.get("email"),
+            "Password": user.get("password"),
+            "Phone": user.get("phone")
         }
     }), 200
 

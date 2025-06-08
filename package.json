@@ -3,15 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-
     "start:backend": "cd backend && python3 connection.py && python3 app.py",
-
-    "start:frontend": "cd frontend && NODE_OPTIONS=--openssl-legacy-provider npm start",
-
-
+    "start:frontend": "cd frontend && cross-env NODE_OPTIONS=--openssl-legacy-provider npm start",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3"
   }
 }

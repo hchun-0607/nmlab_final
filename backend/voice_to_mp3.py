@@ -10,6 +10,7 @@ audio_data = None
 
 
 
+
 def word_to_json(text):
         # 語音辨識（雙語自動）
         # text = recognizer.recognize_google(audio_data, language="zh-TW")

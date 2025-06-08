@@ -20,7 +20,9 @@ export default () =>  {
   const {userData, setUserData} = useChat();
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState("尚未開始");
-  const instance = axios.create({baseURL:'http://localhost:5000'});
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
+
+  
   const [showBomModal, setShowBomModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [analyze, setAnalyze] = useState(false);
