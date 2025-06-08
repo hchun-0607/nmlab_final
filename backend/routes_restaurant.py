@@ -42,7 +42,7 @@ def add_restaurant():
 
     return jsonify({"message": "餐廳新增成功", "restaurant_id": restaurant_id}), 200
 
-@app.route('/get_restaurants', methods=['GET'])
+@restaurants_bp.route('/get_restaurants', methods=['GET'])
 def get_restaurants():
     print("in")
     data = restaurants_table.all()

@@ -213,7 +213,7 @@ def request_challenge():
     nonce_db.insert({'challenge': challenge, 'expired_at': time.time() + 300})  # 5 分鐘有效
     return challenge
 
-@app.route('/analyze_words', methods=['POST'])
+@users_bp.route('/analyze_words', methods=['POST'])
 def analyze_words():
     data = request.get_json()
     print(data)
