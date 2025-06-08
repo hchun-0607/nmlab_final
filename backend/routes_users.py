@@ -20,6 +20,7 @@ from connection import(
 users_bp = Blueprint('users_bp', __name__, url_prefix='/api/avm/users')
 
 db = TinyDB('db.json')
+users_db = db.table('users')
 User = Query()
 phone_db = db.table('phone_codes')
 Phone = Query()
@@ -27,20 +28,20 @@ nonce_db = db.table('nonces')
 Nonce = Query()
 bookings_db = db.table('bookings')
 Booking = Query()
+_module_dir = os.path.dirname(os.path.abspath(__file__))
+_issuer_key_file = os.path.join(_module_dir, 'issuer_key.pem')
+with open(_issuer_key_file, 'rb') as f:
+    issuer_key = ECC.import_key(f.read())
+    
+issuer_did = 'did:example:issuer'  # 固定的 DID
 
-issuer_key_file = os.path.join(current_app.root_path, 'issuer_key.pem')
-if os.path.exists(issuer_key_file):
-    with open(issuer_key_file, 'rb') as f:
-        issuer_key = ECC.import_key(f.read())
-else:
-    # 如果沒有 issuer_key.pem，則生成一個新的 ECC 金鑰
-    issuer_key = ECC.generate(curve='P-256')
-    with open(issuer_key_file, 'wb') as f:
-        f.write(issuer_key.export_key(format='PEM'))
-issuer_did = 'did:example:issuer'        
+#issuer_key, issuer_did = gernerate_isser_key()     
         
 def sign_vc(vc_json, private_key):
-    payload = json.dumps(vc_json, sort_keys=True).encode('utf-8')
+    payload = json.dumps(
+        {k: vc_json[k] for k in vc_json if k != 'proof'},
+        sort_keys=True
+    ).encode('utf-8')
     hash_obj = SHA256.new(payload)
     signer = DSS.new(private_key, 'fips-186-3')
     sig = signer.sign(hash_obj)
@@ -77,6 +78,8 @@ def add_user():
     Username = data.get('username')
     Email = data.get('email')
     passkey = data.get('passkey', None)
+    publickey = data.get('publickey', None)
+    did = data.get('did', None)
     
 
     if not all([Account, Password, Username, Email]):
@@ -142,8 +145,10 @@ def check_verification_code():
     
     key = ECC.generate(curve='P-256')
     did = f'did:example:{str(uuid.uuid4())}'
-    db.update({'holder_did': did}, User.phone == phone)##用phone還是account? 
     
+    users = db.table('users')
+    users.update({'holder_did': did}, User.phone == phone)  # 更新使用者的 DID 資訊
+
     vc = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
       'id': f'urn:uuid:{uuid.uuid4()}',
@@ -163,18 +168,13 @@ def check_verification_code():
       'created': vc['issuanceDate'],
       'jws': sign_vc(vc, issuer_key)
     }
-    db.update({'vc': vc}, User.phone == phone)  # 更新使用者的 VC 資訊
+
     return jsonify({
         'success': True,
         'message': '驗證碼正確',
         'did': did,
         'vc': vc
     }), 200
-    
-
-    
-
-
 
 @users_bp.route('/reset_password', methods=['POST'])
 def reset_password():
@@ -185,3 +185,64 @@ def reset_password():
         return jsonify({"error": "帳號不存在"}), 404
     update_user_password(account, new_password)
     return jsonify({"message": "密碼已重設，請重新登入"}), 200
+
+@users_bp.route('/verify_presentation', methods=['POST'])
+def verify_presentation():
+    vp = request.get_json()
+    
+    record = nonce_db.get(Query().challenge == vp.get('challenge'))
+    if not record or record['expired_at'] < time.time():
+        return jsonify({'success': False, 'message': '無效或過期的挑戰碼'}), 400
+    nonce_db.remove(Query().challenge == vp.get('challenge'))  # 驗證後刪除挑戰碼
+    
+    holder_signature = vp.get('holder_signature')
+    if not holder_signature or not verify_holder_signature(vp, holder_signature):
+        return jsonify({'success': False, 'message': '簽名驗證失敗'}), 400
+    
+    vcs = vp.get('verifiableCredential', [])
+    for vc in vcs:
+        if not verify_vc(vc):
+            return jsonify({'success': False, 'message': 'VC 驗證失敗'}), 400
+    return jsonify({'success': True, 'message': '驗證成功'}), 200
+
+@users_bp.route('/request_challenge', methods=['GET'])
+def request_challenge():
+    """產生一個新的挑戰碼"""
+    challenge = str(uuid.uuid4())
+    nonce_db.insert({'challenge': challenge, 'expired_at': time.time() + 300})  # 5 分鐘有效
+    return challenge
+
+def verify_holder_signature(vp_json: dict, holder_signature_hex: str) -> bool:
+    holder_did = vp_json.get('holder_did')
+    user = users_db.get(User.did == holder_did)
+    if not user or 'publickey' not in user:
+        return False
+    public_key = ECC.import_key(user['publickey'].encode('utf-8'))
+    payload = json.dumps(
+        {k: vp_json[k] for k in vp_json if k != 'holder_signature'},
+        sort_keys=True
+    ).encode('utf-8')
+    hash_obj = SHA256.new(payload)
+    verifier = DSS.new(public_key, 'fips-186-3')
+    sig = bytes.fromhex(holder_signature_hex)
+    try:
+        verifier.verify(hash_obj, sig)
+        return True
+    except ValueError:
+        return False
+    
+def verify_vc(vc: dict) -> bool:
+    proof = vc.pop('proof', None)
+    if not proof or 'type' not in proof or 'jws' not in proof:
+        return False
+    payload = json.dumps(vc, sort_keys=True).encode('utf-8')
+    hash_obj = SHA256.new(payload)
+        
+    public_key = issuer_key.public_key()
+    verifier = DSS.new(public_key, 'fips-186-3')
+    sig = bytes.fromhex(proof['jws'])
+    try:
+        verifier.verify(hash_obj, sig)
+        return True
+    except ValueError:
+        return False

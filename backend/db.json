@@ -48,6 +48,7 @@
             "close": 23.0,
             "capacity": 2,
             "type": "fast food",
+            "contract_adress": "null",
             "rating": 4.5,
             "booked_intervals": {
                 "2025-06-10": {

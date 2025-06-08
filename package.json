@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
 
-    "start:backend": "cd backend && python3 connection.py && python3 app.py && python3 routes_restaurant.py && python3 routes_user.py",
+    "start:backend": "cd backend && python3 connection.py && python3 app.py",
 
     "start:frontend": "cd frontend && NODE_OPTIONS=--openssl-legacy-provider npm start",
 
