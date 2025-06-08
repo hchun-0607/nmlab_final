@@ -14,5 +14,6 @@ app.register_blueprint(users_bp)
 app.register_blueprint(restaurants_bp)
 
 if __name__ == '__main__':
+    print("Starting Flask app...")
     app.run(port=5000, debug=True)
 # app.pyfrontend/src/scss
