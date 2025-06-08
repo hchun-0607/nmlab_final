@@ -4,10 +4,15 @@ from gtts import gTTS
 from openai import OpenAI
 import json
 import re
+from dotenv import load_dotenv
+import os
+
+api_key = os.getenv("OPENAI_API_KEY")
+load_dotenv()
 
 recognizer = sr.Recognizer()
 audio_data = None
-
+client = OpenAI(api_key=api_key)
 
 
 

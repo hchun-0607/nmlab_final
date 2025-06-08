@@ -8,13 +8,20 @@ import axios from "axios"
 import {useHistory} from "react-router-dom"
 import { Routes } from "../routes";
 import { useChat } from "../api/context";
+import {
+  createWebAuthnCredential
+} from './indexDB.js';
+
 
 export default () => {
   let history = useHistory();
 
   const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
   const {memberData, setMemberData} = useChat();
+  const { did, setDid } = useChat();               // DID
+  const { vc, setVc } = useChat();    
   const {isPhoneVerified, setIsPhoneVerified} = useChat();
+
 
 const handleChange = (event) => {
   setMemberData({
@@ -22,6 +29,7 @@ const handleChange = (event) => {
       [event.target.name]: event.target.value
   })
 };
+
 const onNext = async(event) => {
   event.preventDefault();
   // const { account, password, password2, username, email } = memberData;
@@ -41,9 +49,27 @@ const onNext = async(event) => {
     return;
   }
   else{
+    console.log("next")
+    setIsPhoneVerified(false)
+    registerCredential(memberData.username);
     history.push("/examples/passkey")
+ 
+}
   }
-  
+
+
+
+async function registerCredential(username) {
+  console.log("test")
+  const credential = await createWebAuthnCredential(username);
+  const credentialId = credential.rawId;
+  console.log("Credential ID:", new Uint8Array(credentialId));
+  console.log(credential)
+  setMemberData(prev => ({
+        ...prev,
+        publickey: credential,
+        did:did
+      }));
 }
 
 const handleSendVerificationCode = async () => {
@@ -93,6 +119,11 @@ const handleCheckVerificationCode = async () => {
 
     if (response.data.success) {
       alert("驗證成功！");
+      console.log("did:",response.data.did)
+      console.log("vc:",response.data.vc)
+      setDid(response.data.did)
+      setVc(response.data.vc)
+    
       setMemberData(prev => ({
         ...prev,
         phone: response.data.phone

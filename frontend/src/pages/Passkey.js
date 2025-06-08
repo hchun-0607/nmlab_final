@@ -4,6 +4,11 @@ import { Col, Row, Form, Card, Button, Container, InputGroup } from '@themesberg
 import axios from 'axios'
 import {useHistory} from "react-router-dom"
 import { useChat } from "../api/context";
+import {
+  encryptVCWithPasskey,
+  saveEncryptedVCToIndexedDB,
+  loadAndDecryptVC
+} from './indexDB.js';
 
 export default () => {
 
@@ -18,6 +23,8 @@ export default () => {
   const [confirmPassword, setConfirmPassword] = useState(Array(6).fill(''));
   const passwordRefs = useRef([]);
   const confirmRefs = useRef([]);
+  const { did, setDid } = useChat();               // DID
+  const { vc, setVc } = useChat(); 
 
   const onBack = () => {
     history.push("/examples/sign-up")
@@ -57,10 +64,6 @@ const renderInputBoxes = (type, values, refs) =>
 
   const handleSubmit = async(event) => {
   event.preventDefault();
-  console.log(password)
-  console.log(confirmPassword)
-  console.log(memberData)
-  console.log(arraysEqual(password, confirmPassword));
   if(!arraysEqual(password, confirmPassword)){
     alert('訂位金鑰不一致')
     setPassword(Array(6).fill(''))
@@ -86,10 +89,41 @@ const renderInputBoxes = (type, values, refs) =>
     });
 
     console.log(response)
+    const userPasskey = password.join(""); // 將 passkey 字串化
+
+  if (!vc || !did || !memberData?.account) {
+    console.warn("缺少 VC、DID 或 account，略過加解密流程");
+    return;
+  }
+ 
+  encryptVCWithPasskey(vc, userPasskey)
+    .then(encrypted => {
+      return saveEncryptedVCToIndexedDB({
+        userDID: did,
+        userAccount: memberData.account,
+        encryptedVC: encrypted.data,
+        iv: encrypted.iv
+      });
+    })
+    .then(() => {
+      console.log("Encrypted VC saved to IndexedDB.");
+
+      // 解密 VC 並更新 state
+      return loadAndDecryptVC(did, userPasskey);
+    })
+    .then(decryptedVC => {
+      console.log("Decrypted VC:", decryptedVC);
+      setVc(decryptedVC);
+    })
+    .catch(err => {
+      console.error("加密或解密 VC 時發生錯誤:", err);
+    });
+
     
     if(response.data.message === '使用者新增成功'){
       alert('使用者新增成功')
       history.push("/example/Signin")
+      
     }
     else{
       alert("註冊失敗 : "+ response.data.message)
@@ -100,10 +134,11 @@ const renderInputBoxes = (type, values, refs) =>
   
 };
 useEffect(() => {
-  setMemberData(prev => ({
+   setMemberData(prev => ({
     ...prev,
     passkey: password.join("")  // 確保是字串，不是 array
   }));
+  
 }, [password]);
 
   return (

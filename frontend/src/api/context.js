@@ -8,6 +8,8 @@ let client=new WebSocket(WS_URL);
 
 const ChatContext = createContext({
     stat:'',
+    did:'',
+    vc:'',
     task:'',
     sup:'',
     mat:'',
@@ -18,6 +20,8 @@ const ChatContext = createContext({
     isPhoneVerified:'',
     restaurantList:'',
     reservationData:'',
+    setVc:()=>{},
+    setDid:()=>{},
     setMat:()=>{}, //fot material inventory
     setSup:()=>{}, // for suppliers
     setBom:()=>{}, //for bom
@@ -44,6 +48,9 @@ const ChatProvider = (props) => {
     const [valType, setValType] = useState("")
     const [isPhoneVerified, setIsPhoneVerified] = useState(false);
     const [restaurantList, setRestaurantList] = useState([]);
+    const [did, setDid] = useState([]);
+    const [vc, setVc] = useState([]);
+
 
 
     const [userData, setUserData] = useState({
@@ -64,6 +71,8 @@ const ChatProvider = (props) => {
         passkey:"",
         phone:"",
         verificationCode:"",
+        publickey:'',
+        did:""
     });
     const [reservationData, setReservationData] = useState({
         restaurant_id: "",
@@ -85,8 +94,12 @@ const ChatProvider = (props) => {
         <ChatContext.Provider
             value={{
                 // val,
+                vc,
+                setVc,
                 task,
                 setTask,
+                did,
+                setDid,
                 stat,
                 setStat,
                 sup,

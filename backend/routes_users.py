@@ -29,6 +29,7 @@ nonce_db = db.table('nonces')
 Nonce = Query()
 bookings_db = db.table('bookings')
 Booking = Query()
+
 _module_dir = os.path.dirname(os.path.abspath(__file__))
 _issuer_key_file = os.path.join(_module_dir, 'issuer_key.pem')
 with open(_issuer_key_file, 'rb') as f:
@@ -95,25 +96,7 @@ def add_user():
     
     return jsonify({"message": "使用者新增成功"}), 200
 
-    # base_dir = os.path.join(current_app.root_path, 'Users')
-    # os.makedirs(base_dir, exist_ok=True)
-
-    # user_folder = os.path.join(base_dir, Account)
-    # if os.path.exists(user_folder):
-    #     return jsonify({"error": "帳號已存在"}), 400
-    # os.makedirs(user_folder)
-
-    # user_info = {
-    #     "Account": Account,
-    #     "Password": Password,
-    #     "Username": Username,
-    #     "Email": Email
-    # }
-    # info_path = os.path.join(user_folder, 'info.txt')
-    # with open(info_path, 'w', encoding='utf-8') as f:
-    #     json.dump(user_info, f, indent=4, ensure_ascii=False)
-
-    # return jsonify({"message": "註冊成功"}), 200
+    
 
 @users_bp.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
