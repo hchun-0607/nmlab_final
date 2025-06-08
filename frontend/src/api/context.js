@@ -76,7 +76,7 @@ const ChatProvider = (props) => {
         reserver_adress:'',
         reserver_phone:'',
         reserver_email:'',
-        VP:'',
+        VP:'',//VC、DID
     });
 
     

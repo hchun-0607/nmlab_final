@@ -52,7 +52,7 @@ export default () =>  {
 
     
     console.log(reservationData)
-    if (!reservationData.reserver_name || !reservationData.date || !reservationData.time || !reservationData.people || !reservationData.restaurant_name) {
+    if (!reservationData.date || !reservationData.time || !reservationData.people || !reservationData.restaurant_name) {
         alert("尚有欄位未填");
         return;
     }
@@ -83,7 +83,7 @@ export default () =>  {
     recognition.onresult = (event) => {
       const speech = event.results[0][0].transcript;
       setText(speech);
-      setStatus("辨識完成");
+      setStatus("辨識完成，分析中...");
       setIsRecording(false);
 
     };
