@@ -80,6 +80,7 @@ const ChatProvider = (props) => {
         publickey:'',
         did:"",
         credid:"",
+        Wallet_address:'',
     });
     const [reservationData, setReservationData] = useState({
         restaurant_id: "",
@@ -93,6 +94,8 @@ const ChatProvider = (props) => {
         reserver_phone:'',
         reserver_email:'',
         VP:'',//VC、DID
+        wallet_address:'',
+        deposit:'',
     });
 
     

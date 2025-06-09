@@ -74,7 +74,8 @@ def check_user():
             "Phone": user.get("phone"),
             "Wallet":   user.get("wallet_address"),
             "Did":user.get("did"),
-            "CredDid":user.get("credid")
+            "CredDid":user.get("credid"),
+            "Wallet_address":user.get("wallet_address")
         }
     }), 200
 
@@ -86,6 +87,7 @@ def add_user():
     Password = data.get('password')
     Username = data.get('username')
     Email = data.get('email')
+    Phone = data.get('phone')
     passkey = data.get('passkey', None)
     publickey = data.get('publickey', None)
     did = data.get('did', None)
@@ -104,7 +106,7 @@ def add_user():
     private_key_hex = acct.key.hex()         # 私鑰 hex 字串
     # create_user(Account, Password, Username, Email, passkey, publickey, did, credid)
     
-    create_user(Account, Password, Username, Email, passkey,publickey,did, credid, wallet_address, private_key_hex)
+    create_user(Account, Password, Username, Email, passkey,publickey,did, credid, wallet_address, private_key_hex, Phone)
     
     users_db.update(
         {

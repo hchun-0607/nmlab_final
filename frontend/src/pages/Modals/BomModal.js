@@ -97,19 +97,19 @@ function AddBOMModal({ show, onHide }) {
             console.log("✅ 解密後 VC:", vc);
             
             const vp = await createVerifiablePresentationWithWebAuthn(vc, credIdBuffer, userData.Did);
-            console.log(vp)
             setReservationData(prev => ({
                 ...prev,
                 vp: vp 
             }))
 
             // 5. 傳送到後端
+             console.log(reservationData)
             const response = await instance.post('/verify_presentation', reservationData, {
             headers: {
                 'Content-Type': 'application/json'
             }
             });
-
+            
             const result = await response.json();
             console.log("✅ 後端回應:", result);
              if (response.data.success) {
@@ -121,6 +121,8 @@ function AddBOMModal({ show, onHide }) {
         } catch (err) {
                console.error("❌ 提交失敗：", err.name, err.message);
             alert(`提交失敗：${err.name} - ${err.message}`);
+            console.log(reservationData)
+
         }
         
         };

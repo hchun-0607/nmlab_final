@@ -56,6 +56,7 @@ const handleSubmit = async(event, onSave) => {
           Phone: response.data.userdata.Phone,
           Did : response.data.userdata.Did,
           CredDid : response.data.userdata.CredDid,
+          Wallet_address: response.data.userdata.Wallet_address,
           Permission: 1,
           Status: 1,
       })

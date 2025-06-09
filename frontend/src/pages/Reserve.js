@@ -61,15 +61,18 @@ export default () =>  {
     if (!reservationData.date || !reservationData.time || !reservationData.people || !reservationData.restaurant_name) {
         alert("尚有欄位未填");
         // return;
+        console.log(userData)
         setReservationData(prev => ({
             ...prev,
             restaurant_id: '0000',
             restaurant_name: "test",
             restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
-            reserver_phone: userData.Phone,
+            reserver_phone: userData.Phone? userData.Phone || '0900000000' : '0900000000',
             reserver_email : userData.Email,
             reserver_account: userData.Account,
             reserver_name:userData.Username,
+            wallet_address:userData.Wallet_address,
+            deposit:1
          }))
         setShowBomModal(true);
     }
@@ -83,6 +86,7 @@ export default () =>  {
             reserver_email : userData.Email,
             reserver_account: userData.Account,
             reserver_name:userData.Username,
+            wallet_address:userData.Wallet_address,
          }))
         setShowBomModal(true);
     }
