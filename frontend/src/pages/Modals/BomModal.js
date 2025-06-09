@@ -42,7 +42,10 @@ function AddBOMModal({ show, onHide }) {
             ref={refs.current[index]}
             onChange={(e) => handleInputChange(type, index, e)}
             className="mx-1 text-center"
-            style={{ width: '5px' }}
+            style={{ width: '2rem'
+                    , height: '2rem', fontSize: '1.5rem', textAlign: 'center'
+             }}
+            autoFocus={index === 0}
             />
         ));
         };
@@ -97,26 +100,41 @@ function AddBOMModal({ show, onHide }) {
             console.log("✅ 解密後 VC:", vc);
             
             const vp = await createVerifiablePresentationWithWebAuthn(vc, credIdBuffer, userData.Did);
-            setReservationData(prev => ({
-                ...prev,
-                vp: vp 
-            }))
+            console.log("✅ 創建的 VP:", vp);
 
-            // 5. 傳送到後端
-             console.log(reservationData)
-            const response = await instance.post('/verify_presentation', reservationData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            const payload = {
+                ...reservationData,
+                vp};
+            console.log("✅ 傳送的 payload:", payload);
+
+            const response = await instance.post('/verify_presentation', payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
-            
-            const result = await response.json();
-            console.log("✅ 後端回應:", result);
-             if (response.data.success) {
-            alert("驗證碼已發送至您的手機！");
+            console.log("✅ 後端回應:", response.data);
+            if (response.data.success) {
+                alert("驗證碼已發送至您的手機！");
+                setSup(true);
             } else {
-            alert(response.data.message);
+                alert(response.data.message);
             }
+
+            // // 5. 傳送到後端
+            //  console.log(reservationData)
+            // const response = await instance.post('/verify_presentation', reservationData, {
+            // headers: {
+            //     'Content-Type': 'application/json'
+            // }
+            // });
+            
+            // const result = await response.json();
+            // console.log("✅ 後端回應:", result);
+            //  if (response.data.success) {
+            // alert("驗證碼已發送至您的手機！");
+            // } else {
+            // alert(response.data.message);
+            // }
  
         } catch (err) {
                console.error("❌ 提交失敗：", err.name, err.message);

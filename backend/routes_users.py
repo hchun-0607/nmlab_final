@@ -199,23 +199,39 @@ def reset_password():
 
 @users_bp.route('/verify_presentation', methods=['POST'])
 def verify_presentation():
-    vp = request.get_json()
-    print(vp)
+    data = request.get_json()
+    current_app.logger.info(f"Received data for verification: {data}")
+    vp = data.get('vp')
+    if not vp:
+        return jsonify({'success': False, 'message': '缺少驗證資料'}), 400
     
-    record = nonce_db.get(Query().challenge == vp.get('challenge'))
-    if not record or record['expired_at'] < time.time():
-        return jsonify({'success': False, 'message': '無效或過期的挑戰碼'}), 400
-    nonce_db.remove(Query().challenge == vp.get('challenge'))  # 驗證後刪除挑戰碼
+    # record = nonce_db.get(Query().challenge == vp.get('challenge'))
+    # if not record or record['expired_at'] < time.time():
+    #     return jsonify({'success': False, 'message': '無效或過期的挑戰碼'}), 400
+    # nonce_db.remove(Query().challenge == vp.get('challenge'))  # 驗證後刪除挑戰碼
     
-    holder_did = vp.get('holder_did')
+    holder_did = vp.get('holder')
+    if not holder_did:
+        current_app.logger.error("Holder DID is missing in the VP")
+        
+    current_app.logger.info(f"Holder DID: {holder_did}")
+    
+    
     user = users_db.get(User.did == holder_did)
     if not user:
         return jsonify({'success': False, 'message': '無效的持有者 DID'}), 400
     
-    holder_signature = vp.get('holder_signature')
-    if not holder_signature or not verify_holder_signature(vp, holder_signature):
+    current_app.logger.info(f"User found: {user}")
+    
+    signature = vp['proof']['signature']
+    
+    current_app.logger.info(f"Holder signature: {signature}")
+    
+    if not signature or not verify_holder_signature(vp, signature):
+        current_app.logger.error("Holder signature verification failed")
         return jsonify({'success': False, 'message': '簽名驗證失敗'}), 400
     
+    current_app.logger.info("Holder signature verified successfully")
     vcs = vp.get('verifiableCredential', [])
     for vc in vcs:
         if not verify_vc(vc):
