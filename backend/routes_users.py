@@ -17,6 +17,7 @@ from connection import(
     send_otp_to_phone,
     verify_phone_code
 )
+from web3 import Web3
 
 users_bp = Blueprint('users_bp', __name__, url_prefix='/api/avm/users')
 
@@ -36,7 +37,7 @@ with open(_issuer_key_file, 'rb') as f:
     issuer_key = ECC.import_key(f.read())
     
 issuer_did = 'did:example:issuer'  # 固定的 DID
-
+w3 = Web3()
 #issuer_key, issuer_did = gernerate_isser_key()     
         
 def sign_vc(vc_json, private_key):
@@ -70,7 +71,8 @@ def check_user():
             "Username": user.get("username"),
             "Email": user.get("email"),
             "Password": user.get("password"),
-            "Phone": user.get("phone")
+            "Phone": user.get("phone"),
+            "Wallet":   user.get("wallet_address")
         }
     }), 200
 
@@ -92,9 +94,24 @@ def add_user():
     if(find_user_by_account(Account)):
         return jsonify({"error": "帳號已存在"}), 400
     
-    create_user(Account, Password, Username, Email, passkey,publickey,did)
+    acct            = w3.eth.account.create()
+    wallet_address  = acct.address           # 公鑰地址 (0x...)
+    private_key_hex = acct.key.hex()         # 私鑰 hex 字串
     
-    return jsonify({"message": "使用者新增成功"}), 200
+    create_user(Account, Password, Username, Email, passkey,publickey,did,
+        wallet_address, private_key_hex)
+    users_db.update(
+        {
+            'wallet_address': wallet_address,
+            'private_key':    private_key_hex
+        },
+        User.account == Account
+    )
+    
+    return jsonify({
+        "message":        "使用者新增成功",
+        "wallet_address": wallet_address
+    }), 200
 
     
 
