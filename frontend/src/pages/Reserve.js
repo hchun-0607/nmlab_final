@@ -128,7 +128,9 @@ export default () =>  {
         setReservationData({
         ...reservationData,
         restaurant_name: restaurant.name,
-        restaurant_id: restaurant.id
+        restaurant_id: restaurant.id,
+        open: restaurant.open,
+        close: restaurant.close
         });
     } else {
         setReservationData({
@@ -139,14 +141,34 @@ export default () =>  {
     }
     console.log(reservationData)
     };
-
+    const dateoptions = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0'); // 月份從0開始
+        const dd = String(date.getDate()).padStart(2, '0');
+        dateoptions.push(`${yyyy}-${mm}-${dd}`);
+    }
+    const timeoptions = [];
+    if (reservationData.open && reservationData.close) {
+      for (let t = reservationData.open; t <= reservationData.close; t++) {
+        const hh = String(Math.floor(t)).padStart(2, '0');
+        const mm = '00'; // 假設每小時的整點
+        const mmm = '30'
+        timeoptions.push(`${hh}:${mm}`);
+        timeoptions.push(`${hh}:${mmm}`);
+      }
+    } else {
+      console.error("餐廳開放時間或關閉時間未設定");
+    }
 
    
 
   useEffect(() => {
     async function fetchRestaurants() {
       try {
-        const response = await instance.get('/get_restaurants');
+        const response = await instance.get('/../restaurants/get_all_availability');
         console.log(response.data)
         setRestaurantList(response.data);
       } catch (error) {
@@ -276,11 +298,23 @@ export default () =>  {
                 />
               </Col>
               <Col>
-                <Form.Control
-                  type="time"
-                  value={reservationData.time}
-                  onChange={e => setReservationData({ ...reservationData, time: e.target.value })}
-                />
+                <Form.Select
+                  value={reservationData.time || ""}
+                  onChange={e => setReservationData({
+                    ...reservationData,
+                    time: e.target.value
+                  })}
+                  disabled={!reservationData.date}
+                >
+                  <option value="" disabled>
+                    {reservationData.date ? "請選擇時間" : "先選日期"}
+                  </option>
+                  {timeoptions.map(ts => (
+                    <option key={ts} value={ts}>
+                      {ts}
+                    </option>
+                  ))}
+                </Form.Select>
               </Col>
             </Row>
             <Row className="mb-4">

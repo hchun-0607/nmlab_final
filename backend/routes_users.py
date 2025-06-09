@@ -207,6 +207,11 @@ def verify_presentation():
         return jsonify({'success': False, 'message': '無效或過期的挑戰碼'}), 400
     nonce_db.remove(Query().challenge == vp.get('challenge'))  # 驗證後刪除挑戰碼
     
+    holder_did = vp.get('holder_did')
+    user = users_db.get(User.did == holder_did)
+    if not user:
+        return jsonify({'success': False, 'message': '無效的持有者 DID'}), 400
+    
     holder_signature = vp.get('holder_signature')
     if not holder_signature or not verify_holder_signature(vp, holder_signature):
         return jsonify({'success': False, 'message': '簽名驗證失敗'}), 400
@@ -241,7 +246,7 @@ def verify_holder_signature(vp_json: dict, holder_signature_hex: str) -> bool:
     user = users_db.get(User.did == holder_did)
     if not user or 'publickey' not in user:
         return False
-    public_key = ECC.import_key(user['publickey'].encode('utf-8'))
+    public_key = ECC.import_key(user['public_key']['response']['publicKey'].encode('utf-8'))
     payload = json.dumps(
         {k: vp_json[k] for k in vp_json if k != 'holder_signature'},
         sort_keys=True

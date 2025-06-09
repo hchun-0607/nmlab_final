@@ -17,8 +17,8 @@ def main():
     client = Vonage(auth)
     msg = SmsMessage(
         from_="VonageAPI",
-        to=to_number,
-        text='Hello from Vonage! This is a test message.',
+        to="+886906692992",
+        text='testtesttestteesttestetsttest',
     )
     response = client.sms.send(msg)
     first = response.messages[0]
@@ -30,4 +30,3 @@ def main():
 if __name__ == "__main__":
     main()
     print("Starting Vonage SMS test...")
-    main()
