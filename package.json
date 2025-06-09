@@ -8,7 +8,13 @@
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "concurrently": "^7.6.0",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "hardhat": "^2.24.2"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.3.0",
+    "dotenv": "^16.5.0"
   }
 }
