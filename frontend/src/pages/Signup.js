@@ -20,6 +20,7 @@ export default () => {
   const {memberData, setMemberData} = useChat();
   const { did, setDid } = useChat();               // DID
   const { vc, setVc } = useChat();    
+  const { credentialId, setCredentialId } = useChat();    
   const {isPhoneVerified, setIsPhoneVerified} = useChat();
 
 
@@ -29,6 +30,14 @@ const handleChange = (event) => {
       [event.target.name]: event.target.value
   })
 };
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let b of bytes) {
+    binary += String.fromCharCode(b);
+  }
+  return window.btoa(binary); // base64 編碼
+}
 
 const onNext = async(event) => {
   event.preventDefault();
@@ -50,9 +59,25 @@ const onNext = async(event) => {
   }
   else{
     console.log("next")
+    console.log(memberData)
     setIsPhoneVerified(false)
-    registerCredential(memberData.username);
-    history.push("/examples/passkey")
+    try {
+    const { credential, credId } = await registerCredential(memberData.username);
+    // 更新 memberData
+    setMemberData(prev => ({
+      ...prev,
+      publickey: credential,
+      did: did,
+      credid: credId,
+    }));
+    console.log(credential, did)
+
+    // ✅ 確保已經設定好才跳頁
+    history.push("/examples/passkey");
+  } catch (err) {
+    console.error("❌ 註冊憑證失敗", err);
+    alert("註冊失敗，請重試");
+  }
  
 }
   }
@@ -60,16 +85,12 @@ const onNext = async(event) => {
 
 
 async function registerCredential(username) {
-  console.log("test")
+  console.log("🔐 建立 WebAuthn 憑證");
   const credential = await createWebAuthnCredential(username);
-  const credentialId = credential.rawId;
-  console.log("Credential ID:", new Uint8Array(credentialId));
-  console.log(credential)
-  setMemberData(prev => ({
-        ...prev,
-        publickey: credential,
-        did:did
-      }));
+  const credId = credential.id;
+
+  // console.log("✅ Credential ID:", new Uint8Array(credId));
+  return { credential, credId };
 }
 
 const handleSendVerificationCode = async () => {

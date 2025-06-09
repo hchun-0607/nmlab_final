@@ -191,3 +191,107 @@ export async function createWebAuthnCredential(username) {
   console.log("key done")
   return credential;
 }
+
+export async function createVerifiablePresentationWithWebAuthn(vc, credentialId, did) {
+  try {
+    // const challenge = new Uint8Array(32);
+    // window.crypto.getRandomValues(challenge);
+
+    // navigator.credentials.get({
+    //   publicKey: {
+    //     challenge: challenge,
+    //     userVerification: "preferred",
+    //     timeout: 60000,
+    //   }
+    // }).then(assertion => {
+    //   console.log('認證成功', assertion);
+    // }).catch(err => {
+    //   console.error('認證失敗', err);
+    // });
+    //✅ 1. 建立 VP（不含 proof）
+    const vp = {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      type: ["VerifiablePresentation"],
+      verifiableCredential: Array.isArray(vc) ? vc : [vc],
+      holder: did,
+    };
+
+    // ✅ 2. 對 VP JSON 字串做 SHA-256
+    const vpString = JSON.stringify(vp);
+    const encoder = new TextEncoder();
+    const data = encoder.encode(vpString);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const idBuffer = credentialId instanceof ArrayBuffer
+      ? credentialId
+      : credentialId instanceof Uint8Array
+        ? credentialId.buffer
+        : undefined;
+
+    if (!idBuffer) {
+      throw new Error("❌ credentialId 為 undefined 或格式錯誤");
+    }
+
+    // ✅ 3. 呼叫 WebAuthn 取得簽名
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: new Uint8Array(hashBuffer),
+        // allowCredentials: [{
+        //   id: idBuffer,
+        //   type: "public-key",
+        // }],
+        userVerification: "preferred",
+        timeout: 60000
+      },
+    });
+
+    if (!assertion || !assertion.response) {
+      throw new Error("WebAuthn assertion 回傳為 null 或格式錯誤");
+    }
+
+    // ✅ 4. 擷取 WebAuthn 回傳的資料
+    const authResponse = assertion.response;
+    const signature = arrayBufferToBase64(authResponse.signature);
+    const clientDataJSON = arrayBufferToBase64(authResponse.clientDataJSON);
+    const authenticatorData = arrayBufferToBase64(authResponse.authenticatorData);
+
+    // ✅ 5. 組成 proof
+    const proof = {
+      type: "WebAuthnSignature2023",
+      created: new Date().toISOString(),
+      verificationMethod: `${did}#key-1`,
+      proofPurpose: "authentication",
+      challenge: arrayBufferToBase64(hashBuffer),
+      signature,
+      clientDataJSON,
+      authenticatorData,
+    };
+
+    // ✅ 6. 加入 proof 成為完整 VP
+    vp.proof = proof;
+
+    return vp;
+
+  } catch (err) {
+    console.warn("❌ WebAuthn get() 失敗:");
+    console.warn("錯誤名稱:", err.name);
+    console.warn("錯誤訊息:", err.message);
+    if (err.name === "NotAllowedError") {
+      alert("操作遭拒：請確認是否完成指紋或臉部驗證");
+    } else if (err.name === "OperationError") {
+      alert("找不到該 Passkey，請確認是在同一瀏覽器註冊");
+    } else {
+      alert("未知錯誤：" + err.message);
+    }
+  }
+}
+
+
+// Helper: ArrayBuffer 轉 Base64
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}

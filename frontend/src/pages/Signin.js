@@ -54,12 +54,14 @@ const handleSubmit = async(event, onSave) => {
           Email: response.data.userdata.Email,
           Password: response.data.userdata.Password,
           Phone: response.data.userdata.Phone,
+          Did : response.data.userdata.Did,
+          CredDid : response.data.userdata.CredDid,
           Permission: 1,
           Status: 1,
       })
       history.push("/DashboardOverview")
     }
-    else if(response.data.status === '密碼有誤，請重新輸入'){
+    else if(response.data.status === '密碼錯誤'){
       alert("登入失敗 : "+ response.data.status)
       setMemberData({
         account: memberData.account,

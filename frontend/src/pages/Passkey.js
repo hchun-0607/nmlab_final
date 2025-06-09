@@ -82,6 +82,7 @@ const renderInputBoxes = (type, values, refs) =>
     return;
   }
   else{
+    console.log(memberData)
     const response = await instance.post('/add_user', memberData, {
     headers: {
       'Content-Type': 'application/json'
@@ -107,16 +108,8 @@ const renderInputBoxes = (type, values, refs) =>
     })
     .then(() => {
       console.log("Encrypted VC saved to IndexedDB.");
-
-      // 解密 VC 並更新 state
-      return loadAndDecryptVC(did, userPasskey);
-    })
-    .then(decryptedVC => {
-      console.log("Decrypted VC:", decryptedVC);
-      setVc(decryptedVC);
-    })
-    .catch(err => {
-      console.error("加密或解密 VC 時發生錯誤:", err);
+    }).catch(err => {
+      console.error("加密VC 時發生錯誤:", err);
     });
 
     
@@ -138,6 +131,7 @@ useEffect(() => {
     ...prev,
     passkey: password.join("")  // 確保是字串，不是 array
   }));
+  
   
 }, [password]);
 

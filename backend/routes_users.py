@@ -58,11 +58,11 @@ def check_user():
     password = data.get('password')
     result = find_user_by_account(account)
     if not result :
-        return jsonify({"status": "使用者不存在", "message" : "帳號不存在"}), 404
+        return jsonify({"status": "使用者不存在", "message" : "帳號不存在"})
     
     user = result[0]
     if user.get('password') != password:
-        return jsonify({"status": "密碼錯誤", "message" : "密碼錯誤"}), 401
+        return jsonify({"status": "密碼錯誤", "message" : "密碼錯誤"})
     
     return jsonify({
         "status": "成功登入",
@@ -72,13 +72,16 @@ def check_user():
             "Email": user.get("email"),
             "Password": user.get("password"),
             "Phone": user.get("phone"),
-            "Wallet":   user.get("wallet_address")
+            "Wallet":   user.get("wallet_address"),
+            "Did":user.get("did"),
+            "CredDid":user.get("credid")
         }
     }), 200
 
 @users_bp.route('/add_user', methods=['POST'])
 def add_user():
     data = request.get_json()
+    print(data)
     Account = data.get('account')
     Password = data.get('password')
     Username = data.get('username')
@@ -86,6 +89,8 @@ def add_user():
     passkey = data.get('passkey', None)
     publickey = data.get('publickey', None)
     did = data.get('did', None)
+    credid = data.get('credid', None)
+
     
 
     if not all([Account, Password, Username, Email]):
@@ -97,9 +102,10 @@ def add_user():
     acct            = w3.eth.account.create()
     wallet_address  = acct.address           # 公鑰地址 (0x...)
     private_key_hex = acct.key.hex()         # 私鑰 hex 字串
+    # create_user(Account, Password, Username, Email, passkey, publickey, did, credid)
     
-    create_user(Account, Password, Username, Email, passkey,publickey,did,
-        wallet_address, private_key_hex)
+    create_user(Account, Password, Username, Email, passkey,publickey,did, credid, wallet_address, private_key_hex)
+    
     users_db.update(
         {
             'wallet_address': wallet_address,
@@ -192,6 +198,7 @@ def reset_password():
 @users_bp.route('/verify_presentation', methods=['POST'])
 def verify_presentation():
     vp = request.get_json()
+    print(vp)
     
     record = nonce_db.get(Query().challenge == vp.get('challenge'))
     if not record or record['expired_at'] < time.time():

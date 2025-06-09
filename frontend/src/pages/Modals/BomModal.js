@@ -3,12 +3,20 @@ import { Button, Modal, Form, Card, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 import { useChat } from '../../api/context';
+import {
+  createVerifiablePresentationWithWebAuthn,
+  loadAndDecryptVC
+} from '../indexDB.js';
 
 function AddBOMModal({ show, onHide }) {
     const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
 
     const { userData , setSup} = useChat();
     const {reservationData, setReservationData} = useChat();
+    const { did, setDid } = useChat();  
+    const { credentialId, setCredentialId } = useChat();    
+                 // DID
+    
     
     const [formData, setFormData] = useState({
         product_id: '',
@@ -38,6 +46,15 @@ function AddBOMModal({ show, onHide }) {
             />
         ));
         };
+    function base64urlToArrayBuffer(base64url) {
+        const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - base64url.length % 4) % 4);
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes.buffer; // 👈 傳回的是 ArrayBuffer
+    }
 
     const handleInputChange = (type, index, e, refs) => {
     const newValue = e.target.value;
@@ -62,9 +79,52 @@ function AddBOMModal({ show, onHide }) {
     // };
 
     const handleSubmit = async (e) => {
-       
-        console.log(reservationData)
-    };
+        e.preventDefault();
+
+
+
+        try {
+
+            console.log(userData)
+            const userPasskey = password.join("");
+            const credIdBuffer = base64urlToArrayBuffer(userData.CredDid);
+            console.log("credentialId:", credIdBuffer);
+            console.log("Is ArrayBuffer:", credIdBuffer instanceof ArrayBuffer);
+            console.log("Is Uint8Array:", credIdBuffer instanceof Uint8Array);
+            console.log("Converted id:", credIdBuffer instanceof ArrayBuffer ? credIdBuffer : credIdBuffer.buffer);
+            console.log("✅ credIdBuffer instanceof ArrayBuffer:", credIdBuffer instanceof ArrayBuffer);
+            const vc = await loadAndDecryptVC(userData.Did, userPasskey);
+            console.log("✅ 解密後 VC:", vc);
+            
+            const vp = await createVerifiablePresentationWithWebAuthn(vc, credIdBuffer, userData.Did);
+            console.log(vp)
+            setReservationData(prev => ({
+                ...prev,
+                vp: vp 
+            }))
+
+            // 5. 傳送到後端
+            const response = await instance.post('/verify_presentation', reservationData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            });
+
+            const result = await response.json();
+            console.log("✅ 後端回應:", result);
+             if (response.data.success) {
+            alert("驗證碼已發送至您的手機！");
+            } else {
+            alert(response.data.message);
+            }
+ 
+        } catch (err) {
+               console.error("❌ 提交失敗：", err.name, err.message);
+            alert(`提交失敗：${err.name} - ${err.message}`);
+        }
+        
+        };
+
 
     return (
         <Modal show={show} onHide={onHide} centered>

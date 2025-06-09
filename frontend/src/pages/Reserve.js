@@ -50,17 +50,34 @@ export default () =>  {
     const matchedRestaurant = restaurantList.find(
         r => r.name === reservationData.restaurant_name
     );
-
+    // setReservationData(prev => ({
+    //         ...prev,
+    //         restaurant_id: '0000',
+    //         restaurant_name: "test",
+    //   }))
 
     
     console.log(reservationData)
     if (!reservationData.date || !reservationData.time || !reservationData.people || !reservationData.restaurant_name) {
         alert("尚有欄位未填");
-        return;
+        // return;
+        setReservationData(prev => ({
+            ...prev,
+            restaurant_id: '0000',
+            restaurant_name: "test",
+            restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
+            reserver_phone: userData.Phone,
+            reserver_email : userData.Email,
+            reserver_account: userData.Account,
+            reserver_name:userData.Username,
+         }))
+        setShowBomModal(true);
     }
     else{
         setReservationData(prev => ({
             ...prev,
+            restaurant_id: '0000',
+            restaurant_name: "test",
             restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
             reserver_phone: userData.Phone,
             reserver_email : userData.Email,

@@ -20,6 +20,7 @@ const ChatContext = createContext({
     isPhoneVerified:'',
     restaurantList:'',
     reservationData:'',
+    credentialId:'',
     setVc:()=>{},
     setDid:()=>{},
     setMat:()=>{}, //fot material inventory
@@ -34,6 +35,7 @@ const ChatContext = createContext({
     setIsPhoneVerified:()=>{},
     setRestaurantList:()=>{},
     setReservationData:()=>{},
+    setCredentialId:()=>{},
     
 
 });
@@ -45,11 +47,13 @@ const ChatProvider = (props) => {
     const [bom, setBom] = useState(null)
     const [mat, setMat] = useState("")
     const [val, setVal] = useState(null)
+    const [credentialId, setCredentialId] = useState(null)
     const [valType, setValType] = useState("")
     const [isPhoneVerified, setIsPhoneVerified] = useState(false);
     const [restaurantList, setRestaurantList] = useState([]);
     const [did, setDid] = useState([]);
     const [vc, setVc] = useState([]);
+    
 
 
 
@@ -61,6 +65,8 @@ const ChatProvider = (props) => {
         Permission: "",
         Phone:"",
         Status: "",
+        Did:"",
+        CredDid:'',
     });
     const [memberData, setMemberData] = useState({
         username: "",
@@ -72,7 +78,8 @@ const ChatProvider = (props) => {
         phone:"",
         verificationCode:"",
         publickey:'',
-        did:""
+        did:"",
+        credid:"",
     });
     const [reservationData, setReservationData] = useState({
         restaurant_id: "",
@@ -122,6 +129,8 @@ const ChatProvider = (props) => {
                 setRestaurantList,
                 reservationData,
                 setReservationData,
+                credentialId,
+                setCredentialId,
             }}
             {...props}
         />
