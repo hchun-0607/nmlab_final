@@ -11,7 +11,7 @@ def find_user_by_account(account):
     """回傳 list(符合條件的 user dict)，或空 list"""
     return db.search(User.account == account)
 
-def create_user(account, password, username, email, passkey,public_key, did):
+def create_user(account, password, username, email, passkey,public_key, did,wallet_address, private_key_hex):
     """新增使用者到 TinyDB，回傳 insert_id 或 None"""
     user_info = {
         "account": account,
@@ -21,6 +21,8 @@ def create_user(account, password, username, email, passkey,public_key, did):
         "passkey": passkey,
         "public_key": public_key,
         "did": did,
+        "wallet_address":wallet_address, 
+        "private_key_hex":private_key_hex
         
     }
     return db.insert(user_info)
