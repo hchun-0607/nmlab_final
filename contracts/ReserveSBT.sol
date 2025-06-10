@@ -21,9 +21,10 @@ contract ReserveSBT is ERC721URIStorage, Ownable {
     enum State { Active, Returned, Burned }
 
     struct Info {
-        uint256 slotId;   // 訂位時段編號（餐廳自訂）
-        uint256 deposit;  // 押金（wei）
-        State   state;    // 當前狀態
+        uint256 reservationTime;  // UNIX timestamp（秒）
+        uint256 partySize;        // 預約人數
+        uint256 deposit;          // 押金（wei）
+        State   state;            // 當前狀態
     }
 
     /* ───────── 狀態變數 ───────── */
@@ -42,15 +43,23 @@ contract ReserveSBT is ERC721URIStorage, Ownable {
     /* ───────── 餐廳功能 ───────── */
 
     /// @dev 鑄造新的預約 NFT（餐廳呼叫），須支付押金
-    function mintReservation(address guest, uint256 slotId)
+    function mintReservation(
+        address guest,
+        uint256 reservationTime,
+        uint256 partySize
+    )
         external
         payable
-        onlyOwner
     {
         require(msg.value > 0, "deposit required");
         uint256 id = nextId++;
         _safeMint(guest, id);
-        infos[id] = Info(slotId, msg.value, State.Active);
+        infos[id] = Info(
+            reservationTime,
+            partySize,
+            msg.value,
+            State.Active
+        );
     }
 
     /// @dev 顧客退訂：NFT 轉回餐廳 & 狀態改為 Returned
@@ -79,7 +88,7 @@ contract ReserveSBT is ERC721URIStorage, Ownable {
     }
 
     /// @dev 餐廳銷毀過期 NFT
-    function burnExpired(uint256 id) external onlyOwner {
+    function burnExpired(uint256 id) external {
         require(infos[id].state != State.Burned, "already");
         infos[id].state = State.Burned;
         _popReturned(id);
@@ -97,10 +106,20 @@ contract ReserveSBT is ERC721URIStorage, Ownable {
     function getReservationInfo(uint256 id)
         external
         view
-        returns (address owner_, uint256 slot, uint256 deposit, State state)
+        returns (address owner_,
+            uint256 reservationTime,
+            uint256 partySize,
+            uint256 deposit,
+            State state)
     {
         Info memory i = infos[id];
-        return (ownerOf(id), i.slotId, i.deposit, i.state);
+        return (
+            ownerOf(id),
+            i.reservationTime,
+            i.partySize,
+            i.deposit,
+            i.state
+        );
     }
 
     /* ───────── Soul-Bound 限制：覆寫 _update (OZ v5) ───────── */

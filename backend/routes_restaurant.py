@@ -2,11 +2,17 @@
 from flask import Blueprint, request, jsonify, current_app
 import os, json, time, random, string, shutil
 from tinydb import TinyDB, Query
+import datetime
+
 
 db = TinyDB('db.json')
-restaurants_bp = Blueprint('restaurants', __name__, url_prefix='/api/avm')
+restaurants_bp = Blueprint('restaurants_bp', __name__, url_prefix='/api/avm/restaurants')
 restaurants_table = db.table('restaurants') 
 Restaurants = Query()
+availability_table = db.table('availability') 
+reservations_table = db.table('reservations')
+Restaurants = Query()
+
 
 def read_info_as_dict(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -48,6 +54,31 @@ def get_restaurants():
     data = restaurants_table.all()
     return jsonify(data)    
 
+# routes_reservations.py
+from flask import Blueprint, request, jsonify
+from tinydb import TinyDB
+
+
+
+
+@restaurants_bp.route('/add_reservation', methods=['POST'])
+def add_reservation():
+    data = request.get_json()
+    
+    required_fields = [
+        'restaurant_id', 'restaurant_name', 'date', 'time', 'people',
+        'reserver_name', 'reserver_account', 'reserver_adress',
+        'reserver_phone', 'reserver_email', 'VP', 'wallet_address', 'deposit'
+    ]
+    
+    # 檢查必填欄位
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'缺少欄位：{field}'}), 400
+
+    # 存入 DB
+    reservations_table.insert(data)
+    return jsonify({'message': '預約資料已儲存'}), 200
 
 # 其餘 get_restaurant、update_restaurant、delete_restaurant 與之前示範相同
 
@@ -171,5 +202,63 @@ def book_any_time():
 
 def intervals_overlap(s1, e1, s2, e2):
    return not (e1 <= s2 or e2 <= s1)
+
+@restaurants_bp.route('/get_all_availability', methods=['GET'])
+def get_all_availability():
+    
+    print("get_all_availability called")
+    today = datetime.date.today()
+    dates = [(today + datetime.timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
+    
+    slot_length = 0.5  # 時段長度，單位小時
+    all_availability = []
+    for restaurant in restaurants_table.all():
+        restaurant_id = restaurant['restaurant_id']
+        open_h = float(restaurant['open'])
+        close_h = float(restaurant['close'])
+        capacity = int(restaurant['capacity'])
+        rating = float(restaurant.get('rating', 0))
+        rest_type = restaurant['type']
+        price = restaurant['price']
+        location = restaurant['location']
+        
+        weekly = []
+        for date in dates:
+            rec = availability_table.search(
+                (Restaurants.restaurant_id == restaurant_id) &
+                (Restaurants.date == date)
+            )
+            rec = rec[0] if rec else None
+            booked_intervals = rec.get('booked_intervals', []) if rec else []
+            slots = []
+            t = open_h
+            while t + slot_length <= close_h:
+                slots.append((t, t + slot_length))
+                t += slot_length
+            available_slots = []
+            for start, end in slots:
+                overlap = sum(
+                    1 for iv in booked_intervals
+                    if not (end <= iv["start"] or start >= iv["end"])
+                )
+                if overlap < capacity:
+                    available_slots.append(start)
+            weekly.append({
+                "date": date,
+                "available_slots": available_slots
+            })
+        all_availability.append({
+            "restaurant_id": restaurant_id,
+            "name": restaurant['name'],
+            "rating": rating,
+            "open": open_h,
+            "close": close_h,
+            "capacity": capacity,
+            "weekly_availability": weekly,
+            "type":rest_type,
+            "price" :price,
+            "location":location
+        })
+    return jsonify(all_availability), 200
 
 

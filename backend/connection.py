@@ -22,7 +22,7 @@ def create_user(account, password, username, email, passkey,public_key, did, cre
         "public_key": public_key,
         "did": did,
         "phone":phone,
-        "wallet_address":wallet_address, 
+        "wallet_address":"0xc8cf4A387217abb2878808A3b21f24b79EF83B9e",
         "private_key_hex":private_key_hex,
         "credid":credid,
         

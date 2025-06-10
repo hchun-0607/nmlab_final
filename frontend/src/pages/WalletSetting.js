@@ -1,223 +1,98 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faFileAlt,  faPlus,  faUpload } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Button, Form , Tab ,Nav } from '@themesberg/react-bootstrap';
-import ExcelJs from "exceljs";
-import axios from 'axios';
-import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWallet, faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row, Button, Form, Card, Alert } from "@themesberg/react-bootstrap";
+import axios from "axios";
 
-import AddBOMModal from './Modals/BomModal';
-import { useChat } from "../api/context";
-// import ProductTable from "../components/BomTable";
-
-
-
-export default () => {
-  const [excelFile, setExcelFile] = useState(null);
-  const [showBomModal, setShowBomModal] = useState(false);
-  const instance = axios.create({baseURL:'http://localhost:5000'});
-  const [result, setResult] = useState([]);
-  const [bomdata, setBomdata] = useState(null);
-  const {bom, setBom} = useChat();
-
-  const handleExceldownload = async () => {
-    const bom = new ExcelJs.Workbook();
-    const sheet = bom.addWorksheet('BOM表設定');
-    sheet.addTable({
-        ref: 'A1',
-        columns: [
-            { name: '一階產品代碼' },
-            { name: '一階產品名稱' },
-            { name: '二階產品代碼' },
-            { name: '二階產品名稱' },
-            { name: '二階產品使用量(每一單位一階產品)' },
-            { name: '三階產品代碼' },
-            { name: '三階產品名稱' },
-            { name: '三階產品使用量(每一單位二階產品)' },
-        ],
-        rows: [
-            ["P001", "小刀產品1", "P001 - 1", "小刀產品1- 1", "5", "M001", "2"],
-            ["P001", "小刀產品1", "P001 - 1", "小刀產品1- 1", "5", "M002", "3"],
-            ["P001", "小刀產品1", "P001 - 2", "小刀產品1- 2", "6", "M001", "2"],
-            ["P001", "小刀產品1", "P001 - 2", "小刀產品1- 2", "6", "M002", "3"],
-            ["P001", "小刀產品1", "P001 - 2", "小刀產品1- 2", "6", "M003", "1"],
-        ]
-    })
-    // 表格裡面的資料都填寫完成之後，訂出下載的callback function
-		// 異步的等待他處理完之後，創建url與連結，觸發下載
-	  bom.xlsx.writeBuffer().then((content) => {
-		const link = document.createElement("a");
-	    const blobData = new Blob([content], {
-	      type: "application/vnd.ms-excel;charset=utf-8;"
-	    });
-	    link.download = 'BOM.xlsx';
-	    link.href = URL.createObjectURL(blobData);
-	    link.click();
-	  });
-      
-  }
-
-  const [selectedFile, setSelectedFile] = useState(null);
-
-
-
-  const handleFileChange = (e) => {
-      setSelectedFile(e.target.files[0]);
-  };
-
-  const handleUpload = () => {
-      if (!selectedFile) {
-          alert('請選擇一個Excel檔案');
-          return;
-      }
-
-      const formData = new FormData();
-      formData.append('excelFile', selectedFile);
-
-      
-      instance.post('/upload_bom', formData, {
-          headers: {
-              'Content-Type': 'multipart/form-data'
-          }
-      })
-      .then(function (response) {
-          // 處理成功的回應
-          alert('上傳成功');
-          console.log('上傳成功', response.data);
-      })
-      .catch(function (error) {
-          // 處理錯誤
-          alert('上傳失敗，請重新上傳');
-          console.error('上傳失敗', error);
-      });
-  };
-
-  const handleSingleAdd = () => {
-    setShowBomModal(true);
-  };
-
-  const handleCloseBomModal = () => {
-    setShowBomModal(false);
-  };
-
-  const handleSaveBom = async () => {
-    // Handle the logic to save the Bom data
-    setResult(await instance.get('/get_bom'))
-    console.log(result.data)
-  };
-
-  async function getBOMData() {
-    try {
-      const response = await instance.get('/get_bom');
-      console.log(response.data);
-      return response.data; // This should contain the data returned by the backend
-    } catch (error) {
-      console.error('Error fetching BOM data:', error);
-      throw error; // Rethrow the error to handle it at a higher level if needed
-    }
-  }
+export default function WalletBalance() {
+  const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
   
-  // Call the getBOMData function when needed
-  async function handleViewBom() {
-    try {
-      const data = await getBOMData();
-      console.log('BOM data:', data);
-      setBom("BOM");
-      setBomdata(data);
-    } catch (error) {
-      console.error('An error occurred:', error);
+  const [account, setAccount] = useState("");
+  const [balance, setBalance] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (e) => {
+    setAccount(e.target.value.trim());
+    setError("");
+    setBalance(null);
+  };
+
+  const handleCheckBalance = async () => {
+    if (!account) {
+      setError("請輸入使用者帳號");
+      setBalance(null);
+      return;
     }
-  }
 
-  useEffect(() => {
-    handleViewBom();
-    setBom(null);
-  }, [bom]);
+    setLoading(true);
+    setError("");
+    setBalance(null);
 
-  const [remove , setRemove] = useState(false)
-  const handleViewRemove = () => {
-    setRemove(true)
-  }
+    try {
+      const response = await instance.post("/balance", { account });
+      if (response.data.success) {
+        setBalance(response.data.balance_eth);
+      } else {
+        setError(response.data.message || "查詢失敗");
+      }
+    } catch (err) {
+      setError("伺服器錯誤，請稍後再試");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-3">
-        <h2 className="fw-bold">
-          錢包資訊
-        </h2>
-      </div>
-      <Tab.Container defaultActiveKey="upload">
-        <Row>
-          <Col xs={12} xl={10}>
-            {/* Nav for Tabs */}
-            <Nav variant="tabs">
-              <Nav.Item>
-                <Nav.Link eventKey="upload">上傳</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="browse" onClick={handleViewBom}>瀏覽</Nav.Link>
-              </Nav.Item>
-            </Nav>
+    <Row className="justify-content-center mt-5">
+      <Col xs={12} md={8} lg={6}>
+        <Card className="shadow-sm">
+          <Card.Body>
+            <h3 className="mb-4 text-center">
+              <FontAwesomeIcon icon={faWallet} className="me-2 text-primary" />
+              錢包餘額查詢
+            </h3>
 
-            {/* Tab Content */}
-            <Tab.Content>
-              <Tab.Pane eventKey="upload">
+            <Form.Group className="mb-3">
+              <Form.Label>使用者帳號</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="請輸入使用者帳號"
+                value={account}
+                onChange={handleInputChange}
+                isInvalid={!!error}
+              />
+              <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+            </Form.Group>
 
-                <div className="d-flex justify-content-center align-items-center mb-3">
-                  <Col xs={12} xl={5}>
-                    <Form.Group>
-                      <Form.Label>上傳excel</Form.Label>
-                      <Form.Control type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
-                    </Form.Group>
-                  </Col>
+            <div className="d-grid gap-2 mb-3">
+              <Button
+                variant="primary"
+                onClick={handleCheckBalance}
+                disabled={loading || account === ""}
+              >
+                {loading ? (
+                  <>
+                    <FontAwesomeIcon icon={faSpinner} spin className="me-2" />
+                    查詢中...
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faSearch} className="me-2" />
+                    查詢餘額
+                  </>
+                )}
+              </Button>
+            </div>
 
-                </div>
-                <div className="d-flex justify-content-center align-items-center mb-3">
-                <Col xs={12} xl={5}>
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleExceldownload}>
-                  <FontAwesomeIcon icon={faDownload} className="me-2" />
-                  下載範例
-                </Button>
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleUpload}>
-                    <FontAwesomeIcon icon={faUpload} className="me-2" />
-                    上傳
-                </Button>
-                </Col>
-                </div>
-              </Tab.Pane>
-
-              <Tab.Pane eventKey="browse">
-              {/* Browse content here */}
-              {/* You can display a table or a list of files here */}
-              <div className="d-flex justify-content-between flex-wrap flex-md-nowrap py-2">
-                {/* 單筆新增按鈕 */}
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleSingleAdd}>
-                  <FontAwesomeIcon icon={faPlus} className="me-2" />
-                  新增一階產品
-                </Button>
-                <Button className="me-2" variant="primary" onClick={handleViewRemove}>
-                  <FontAwesomeIcon className="me-2" />
-                  查看刪除紀錄
-                </Button>
-              </div>
-              {/* <TransactionsTable /> */}
-              {/* {bomdata !== null && <ProductTable data={bomdata} data2={remove}/>} */}
-            </Tab.Pane>
-            </Tab.Content>
-
-          </Col>
-
-        </Row>
-      </Tab.Container>
-
-      {/* Bom Form Modal */}
-      <AddBOMModal
-        show={showBomModal}
-        onHide={handleCloseBomModal}
-        onSave={handleViewBom}
-      />
-    </>
+            {balance !== null && (
+              <Alert variant="success" className="text-center">
+                <strong>餘額：</strong> {balance} ETH
+              </Alert>
+            )}
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
   );
-};
-
- 
+}

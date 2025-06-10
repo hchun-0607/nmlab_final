@@ -110,10 +110,24 @@ function AddBOMModal({ show, onHide }) {
             }
             });
             
-            const result = await response.json();
-            console.log("✅ 後端回應:", result);
              if (response.data.success) {
-            alert("驗證碼已發送至您的手機！");
+            alert("訂位成功，請至訂位資訊查看");
+            onHide();
+            setReservationData({
+                    restaurant_id: "",
+                    restaurant_name: "",
+                    date:"",
+                    time:"",
+                    people:"",
+                    reserver_name:'',
+                    reserver_account:'',
+                    reserver_adress:'',
+                    reserver_phone:'',
+                    reserver_email:'',
+                    VP:'',//VC、DID
+                    wallet_address:'',
+                    deposit:'',
+                });
             } else {
             alert(response.data.message);
             }

@@ -43,11 +43,11 @@ export default (props = {}) => {
     }
   });
 
-  useEffect(() => {
-    if(typeof(window.localStorage.getItem('data')) !=="undefined"){
-      setUserData(JSON.parse(window.localStorage.getItem('data')))
-    }
-  }, []);
+  // useEffect(() => {
+  //   if(typeof(window.localStorage.getItem('data')) !=="undefined"){
+  //     setUserData(JSON.parse(window.localStorage.getItem('data')))
+  //   }
+  // }, []);
   
 
   const NavItem = (props) => {
@@ -84,7 +84,7 @@ export default (props = {}) => {
           <div className="sidebar-inner px-4 pt-3"> 
             <Nav className="flex-column pt-3 pt-md-0">
               <NavItem title={userData.Username} permission = {userData.Permission} tag="tag"  />
-              <NavItem title="首頁" link={Routes.DashboardOverview.path} icon={faChartPie} />
+              {/* <NavItem title="首頁" link={Routes.DashboardOverview.path} icon={faChartPie} /> */}
               
               {/* <NavItem title="財會系統" icon={faHandHoldingUsd} link={Routes.Transactions.path} /> */}
               <CollapsableNavItem eventKey="reserves/" title="立即訂位" icon={faUtensils}>
@@ -92,11 +92,11 @@ export default (props = {}) => {
                 <NavItem title="直接訂位" link={Routes.Reserve.path}  /> 
               </CollapsableNavItem>  
               {/* <CollapsableNavItem eventKey="examples/" title="訂位資訊" icon={faCog}> */}
-              <NavItem title="歷史訂位資訊" link={Routes.Reservations.path} icon={faTable} /> 
+              <NavItem title="訂位資訊" link={Routes.Reservations.path} icon={faTable} /> 
               {/* </CollapsableNavItem>             */}
               <CollapsableNavItem eventKey="tables/" title="使用者資訊" icon={faUser}>
                 <NavItem title="錢包資訊" link={Routes.Walletsetting.path} /> 
-                <NavItem title="編輯個人資料" link={Routes.Usersetting.path} />
+                {/* <NavItem title="編輯個人資料" link={Routes.Usersetting.path} /> */}
               </CollapsableNavItem>
              
               <NavItem title="登出" link={Routes.Presentation.path} icon={faSignOutAlt} />

@@ -29,7 +29,8 @@ export default () => {
   useEffect(() => {
   async function fetchRestaurants() {
     try {
-      const response = await instance.get('/get_restaurants');
+      console.log("calling")
+      const response = await instance.get('/get_all_availability');
       console.log(response.data)
       setRestaurantList(response.data);
     } catch (error) {
@@ -38,6 +39,13 @@ export default () => {
   }
   fetchRestaurants();
     }, []);
+
+    const formatSlots = (slot) => {
+      const h = Math.floor(slot);
+      const m = Math.round((slot - h) * 60);
+      const mm = m ===0 ? '00' : String(m).padStart(2, '0');
+      return `${h}:${mm}`;
+    }
 
     const handleFavorite = (e) => {
     //   setSelectedFile(e.target.files[0]);
@@ -79,5 +87,3 @@ export default () => {
     </div>
     );
 };
-
- 

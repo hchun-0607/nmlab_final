@@ -21,6 +21,7 @@ export default () =>  {
   const [result, setResult] = useState(null);
   const [status, setStatus] = useState("尚未開始");
   const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
+  const res_instance = axios.create({baseURL:'http://localhost:5000/api/avm/restaurants'});
 
   
   const [showBomModal, setShowBomModal] = useState(false);
@@ -61,26 +62,26 @@ export default () =>  {
     if (!reservationData.date || !reservationData.time || !reservationData.people || !reservationData.restaurant_name) {
         alert("尚有欄位未填");
         // return;
-        console.log(userData)
-        setReservationData(prev => ({
-            ...prev,
-            restaurant_id: '0000',
-            restaurant_name: "test",
-            restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
-            reserver_phone: userData.Phone? userData.Phone || '0900000000' : '0900000000',
-            reserver_email : userData.Email,
-            reserver_account: userData.Account,
-            reserver_name:userData.Username,
-            wallet_address:userData.Wallet_address,
-            deposit:1
-         }))
-        setShowBomModal(true);
+        // console.log(userData)
+        // setReservationData(prev => ({
+        //     ...prev,
+        //     restaurant_id: '0000',
+        //     restaurant_name: "test",
+        //     restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
+        //     reserver_phone: userData.Phone? userData.Phone || '0900000000' : '0900000000',
+        //     reserver_email : userData.Email,
+        //     reserver_account: userData.Account,
+        //     reserver_name:userData.Username,
+        //     wallet_address:userData.Wallet_address,
+        //     deposit:1
+        //  }))
+        // setShowBomModal(true);
     }
     else{
         setReservationData(prev => ({
             ...prev,
-            restaurant_id: '0000',
-            restaurant_name: "test",
+            // restaurant_id: '0000',
+            // restaurant_name: "test",
             restaurant_id: matchedRestaurant ? matchedRestaurant.restaurant_id || '' : '0000',
             reserver_phone: userData.Phone,
             reserver_email : userData.Email,
@@ -146,12 +147,12 @@ export default () =>  {
   useEffect(() => {
     async function fetchRestaurants() {
       try {
-        const response = await instance.get('/get_restaurants');
+        console.log("calling")
+        const response = await res_instance.get('/get_all_availability');
         console.log(response.data)
         setRestaurantList(response.data);
       } catch (error) {
         console.error('無法取得餐廳資料:', error);
-        setStatus("發生錯誤 ❌");
       }
     }
     fetchRestaurants();
@@ -167,8 +168,8 @@ export default () =>  {
         setReservationData(prev => ({
             ...prev,
             restaurant_name: response.data.result.restaurant_name ||'',
-            date: response.data.result.date,
-            time : response.data.result.time,
+            date: "2025-06-30",
+            time : "17:00",
             people: response.data.result.number_of_people,
          })); // 或其他 setXXX 根據你實際用途
         setResult(response.data.result);

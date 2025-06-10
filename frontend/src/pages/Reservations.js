@@ -2,196 +2,124 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFileAlt,  faPlus,  faUpload } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Button, Form , Tab ,Nav } from '@themesberg/react-bootstrap';
-import ExcelJs from "exceljs";
 import axios from 'axios';
 import { useEffect } from "react";
-
-// import AddBOMModal from './Modals/BomModal';
 import { useChat } from "../api/context";
-// import ProductTable from "../components/BomTable";
+import '../css/restaurant.css';
+
 
 
 
 export default () => {
-  const [excelFile, setExcelFile] = useState(null);
-  const [showBomModal, setShowBomModal] = useState(false);
   const instance = axios.create({baseURL:'http://localhost:5000/api/avm/users'});
-
-  
-  const [result, setResult] = useState([]);
-  const [bomdata, setBomdata] = useState(null);
-  const {bom, setBom} = useChat();
-  const {reservationData, setReservationData} = useChat();
-  
-
-  const handleExceldownload = async () => {
-    const bom = new ExcelJs.Workbook();
-    // const sheet = bom.addWorksheet('BOM表設定');
-    
-    // 表格裡面的資料都填寫完成之後，訂出下載的callback function
-		// 異步的等待他處理完之後，創建url與連結，觸發下載
-	  bom.xlsx.writeBuffer().then((content) => {
-		const link = document.createElement("a");
-	    const blobData = new Blob([content], {
-	      type: "application/vnd.ms-excel;charset=utf-8;"
-	    });
-	    link.download = 'BOM.xlsx';
-	    link.href = URL.createObjectURL(blobData);
-	    link.click();
-	  });
-      
-  }
-
-  const [selectedFile, setSelectedFile] = useState(null);
-
-
-
-  const handleFileChange = (e) => {
-      setSelectedFile(e.target.files[0]);
-  };
-
-  const handleUpload = () => {
-      if (!selectedFile) {
-          alert('請選擇一個Excel檔案');
-          return;
-      }
-
-      const formData = new FormData();
-      formData.append('excelFile', selectedFile);
-
-      
-      instance.post('/upload_bom', formData, {
-          headers: {
-              'Content-Type': 'multipart/form-data'
-          }
-      })
-      .then(function (response) {
-          // 處理成功的回應
-          alert('上傳成功');
-          console.log('上傳成功', response.data);
-      })
-      .catch(function (error) {
-          // 處理錯誤
-          alert('上傳失敗，請重新上傳');
-          console.error('上傳失敗', error);
-      });
-  };
-
-  const handleSingleAdd = () => {
-    setShowBomModal(true);
-  };
-
-  const handleCloseBomModal = () => {
-    setShowBomModal(false);
-  };
-
-
-
-  const handleSaveBom = async () => {
-    // Handle the logic to save the Bom data
-    setResult(await instance.get('/get_bom'))
-    console.log(result.data)
-  };
-
-  async function getBOMData() {
-    try {
-      const response = await instance.get('/get_bom');
-      console.log(response.data);
-      return response.data; // This should contain the data returned by the backend
-    } catch (error) {
-      console.error('Error fetching BOM data:', error);
-      throw error; // Rethrow the error to handle it at a higher level if needed
-    }
-  }
-  
-  // Call the getBOMData function when needed
-  async function handleViewBom() {
-    try {
-      const data = await getBOMData();
-      console.log('BOM data:', data);
-      setBom("BOM");
-      setBomdata(data);
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
-  }
+  const {reservationList, setReservationList} = useChat();
+  const {userData, setUserData} = useChat();
 
   useEffect(() => {
-    handleViewBom();
-    setBom(null);
-  }, [bom]);
+    async function fetchHistoricalReservations() {
+      console.log(userData)
+      if (!userData.Wallet_address) {
+        console.warn('未提供錢包地址');
+        return;
+      }
+
+      try {
+        console.log(userData.Wallet_address)
+        const response = await instance.get('/mine/reservations', {
+          params: {
+            wallet: userData.Wallet_address
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 可以處理 response，例如：setHistoricalReservations(response.data);
+        console.log('歷史訂位資料：', response.data);
+        setReservationList(response.data)
+
+      } catch (error) {
+        console.error('無法取得歷史訂位資料:', error);
+      }
+    }
+      console.log(userData)
+    fetchHistoricalReservations();
+  }, []);
 
   
 
-  const [remove , setRemove] = useState(false)
-  const handleViewRemove = () => {
-    setRemove(true)
-  }
+
 
   return (
     <>
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-3">
-        <h2 className="fw-bold">
-          歷史訂為資訊
-        </h2>
+      <div className="container mt-4">
+      <h2 className="text-center mb-4">訂位資訊</h2>
       </div>
       <Tab.Container defaultActiveKey="upload">
         <Row>
-          <Col xs={12} xl={10}>
+          <Col xs={12} xl={12}>
             {/* Nav for Tabs */}
             <Nav variant="tabs">
               <Nav.Item>
-                <Nav.Link eventKey="upload">上傳</Nav.Link>
+                <Nav.Link eventKey="upload">待用餐</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="browse" onClick={handleViewBom}>瀏覽</Nav.Link>
+                <Nav.Link eventKey="browse" >已用餐</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="unsuccessful" >未成功</Nav.Link>
               </Nav.Item>
             </Nav>
 
             {/* Tab Content */}
             <Tab.Content>
               <Tab.Pane eventKey="upload">
+                  <div className="container-fluid mt-4">
+                    {Array.isArray(reservationList) && reservationList
+                      .filter(reservation => reservation.reserver_account === userData.Account)
+                      .map((reservation, index) => (
+                        
+                        <div
+                          key={index}
+                          className="reservation-card d-flex justify-content-between align-items-center p-4 mb-4 shadow-sm border rounded-4 bg-white"
+                          style={{ flexWrap: "nowrap" }} // 不換行，確保三欄水平排
+                        >
+                          {/* 左邊：圖片 */}
+                          <div style={{ flex: "0 0 260px", marginRight: "20px" }}>
+                            {reservation.nft_picture && (
+                              <img src="http://feitalks.com/wp-content/uploads/2019/11/20106568_1893392504261408_6372724982151887580_n-500x381.png" alt="NFT" style={{ maxWidth: "250px", borderRadius: "12px" }} />
+                            )}
+                          </div>
 
-                <div className="d-flex justify-content-center align-items-center mb-3">
-                  <Col xs={12} xl={5}>
-                    <Form.Group>
-                      <Form.Label>上傳excel</Form.Label>
-                      <Form.Control type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
-                    </Form.Group>
-                  </Col>
+                          {/* 中間：訂位資訊 */}
+                          <div style={{ flex: "1 1 auto", marginRight: "20px" }}>
+                            <h4 className="fw-bold mb-3">{reservation.restaurant_name}</h4>
+                            <p className="mb-1">訂位時間：{reservation.date} {reservation.time}</p>
+                            <p className="mb-1">用餐人數：{reservation.people} 人</p>
+                            <p className="mb-1">
+                              狀態：訂位成功
+                            </p>
+                            {reservation.nft_id && (
+                              <>
+                                <p className="mb-1">NFT ID：{reservation.nft_id}</p>
+                                <p className="mb-1">NFT 說明：{reservation.nft_content}</p>
+                              </>
+                            )}
+                          </div>
 
-                </div>
-                <div className="d-flex justify-content-center align-items-center mb-3">
-                <Col xs={12} xl={5}>
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleExceldownload}>
-                  <FontAwesomeIcon icon={faDownload} className="me-2" />
-                  下載範例
-                </Button>
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleUpload}>
-                    <FontAwesomeIcon icon={faUpload} className="me-2" />
-                    上傳
-                </Button>
-                </Col>
+                          {/* 右邊：按鈕 */}
+                          <div style={{ flex: "0 0 auto", textAlign: "right" }}>
+                              <button className="btn btn-outline-danger px-4 py-2 btn-sm">
+                                取消訂位
+                              </button>
+                          </div>
+                        </div>
+                      ))}
                 </div>
               </Tab.Pane>
 
-              <Tab.Pane eventKey="browse">
-              {/* Browse content here */}
-              {/* You can display a table or a list of files here */}
-              <div className="d-flex justify-content-between flex-wrap flex-md-nowrap py-2">
-                {/* 單筆新增按鈕 */}
-                <Button icon={faFileAlt} className="me-2" variant="primary" onClick={handleSingleAdd}>
-                  <FontAwesomeIcon icon={faPlus} className="me-2" />
-                  新增一階產品
-                </Button>
-                <Button className="me-2" variant="primary" onClick={handleViewRemove}>
-                  <FontAwesomeIcon className="me-2" />
-                  查看刪除紀錄
-                </Button>
-              </div>
-              {/* <TransactionsTable /> */}
-              {/* {bomdata !== null && <ProductTable data={bomdata} data2={remove}/>} */}
-            </Tab.Pane>
+              
+            
             </Tab.Content>
 
           </Col>
@@ -199,12 +127,7 @@ export default () => {
         </Row>
       </Tab.Container>
 
-      {/* Bom Form Modal */}
-      {/* <AddBOMModal
-        show={showBomModal}
-        onHide={handleCloseBomModal}
-        onSave={handleViewBom}
-      /> */}
+
     </>
   );
 };

@@ -49,14 +49,15 @@ const handleSubmit = async(event, onSave) => {
       alert(response.data.status)
       console.log(response.data)
       setUserData({
-          Username: response.data.userdata.Username,
+          // Username: response.data.userdata.Username,
+          Username: "antoine",
           Account: response.data.userdata.Account,
           Email: response.data.userdata.Email,
           Password: response.data.userdata.Password,
           Phone: response.data.userdata.Phone,
           Did : response.data.userdata.Did,
           CredDid : response.data.userdata.CredDid,
-          Wallet_address: response.data.userdata.Wallet_address,
+          Wallet_address: "0xc8cf4A387217abb2878808A3b21f24b79EF83B9e",
           Permission: 1,
           Status: 1,
       })
@@ -90,7 +91,7 @@ const handleSubmit = async(event, onSave) => {
             <Col xs={12} className="d-flex align-items-center justify-content-center">
               <div className="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
                 <div className="text-center text-md-center mb-4 mt-md-0">
-                  <h3 className="mb-0">NFT餐廳訂位系統</h3>
+                  <h3 className="mb-0">區塊鍊NFT訂位系統</h3>
                 </div>
                 <Form className="mt-4">
                   <Form.Group id="email" className="mb-4">

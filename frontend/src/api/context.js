@@ -20,6 +20,7 @@ const ChatContext = createContext({
     isPhoneVerified:'',
     restaurantList:'',
     reservationData:'',
+    reservationList:'',
     credentialId:'',
     setVc:()=>{},
     setDid:()=>{},
@@ -35,6 +36,7 @@ const ChatContext = createContext({
     setIsPhoneVerified:()=>{},
     setRestaurantList:()=>{},
     setReservationData:()=>{},
+    setReservationList:()=>{},
     setCredentialId:()=>{},
     
 
@@ -53,6 +55,7 @@ const ChatProvider = (props) => {
     const [restaurantList, setRestaurantList] = useState([]);
     const [did, setDid] = useState([]);
     const [vc, setVc] = useState([]);
+    const [reservationList, setReservationList] = useState();
     
 
 
@@ -67,6 +70,7 @@ const ChatProvider = (props) => {
         Status: "",
         Did:"",
         CredDid:'',
+        Wallet_address:'',
     });
     const [memberData, setMemberData] = useState({
         username: "",
@@ -134,6 +138,8 @@ const ChatProvider = (props) => {
                 setReservationData,
                 credentialId,
                 setCredentialId,
+                reservationList,
+                setReservationList,
             }}
             {...props}
         />
