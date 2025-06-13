@@ -6,7 +6,6 @@
 * **合約**：Solidity (Hardhat)
 * **後端**：Python (FastAPI + web3.py)
 * **前端**：React + TypeScript + ethers.js (Vite)
-* **SSI**：
 
 ---
 
@@ -17,7 +16,6 @@ nmlab_final/
 ├── contracts/        # 智慧合約專案
 ├── backend/          # FastAPI 後端
 ├── frontend/         # React 前端
-└── rpi_verify/       # RPi 驗票腳本
 ├── vscode-workspace.code-workspace  
 ├── .env              
 ├── env.example       
@@ -62,22 +60,9 @@ nmlab_final/
    npm start
    ```
 
-5. **測試驗票腳本**
+5. **同時啟動前後端**
 
-   ```bash
-   cd ../rpi_verify
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   python scan_qr.py
+   ```
+   npm run start:all
    ```
 
----
-
-## 常見問題
-
-* **Node 版本**：`nvm install --lts && nvm use --lts`
-* **WSL noexec**：將專案放到 Linux FS (`~/`)，並用 Remote-WSL 開啟
-* **忘記 ABI**：將 `contracts/artifacts/.../ReserveSBT.json` 的 ABI 貼到 `rpi_verify/ReserveSBT_abi.json`
-
----
